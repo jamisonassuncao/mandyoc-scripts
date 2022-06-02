@@ -1,0 +1,16 @@
+# Ignore Pyhton related files
+__pycache__
+.pytest_cache
+.ipynb_checkpoints
+functions/.ipynb_checkpoints
+functions/__pycache__
+functions/io/.ipynb_checkpoints
+functions/io/__pycache__
+functions/io/__init__.py
+
+# Ignore macOS related files
+.vscode/
+.DS_store
+
+# Ignore input/ folder created by the scripts
+input
