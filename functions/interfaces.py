@@ -7,7 +7,7 @@ import xarray as xr
 from .coordinates import get_shape
 
 
-def create_interface(coordinates, fill_value=0):
+def create_interface(coordinates, fill_value=0, compositional_factor=1.0, density=1.0, radiogenic_heat=0.0, pre_exponential_scale_factor=0.0, power_law_exponent=0.0, activation_energy=0.0, activation_volume=0.0):
     """
     Create an empty array to model a 2D or 3D interface
 
@@ -35,10 +35,18 @@ def create_interface(coordinates, fill_value=0):
         fill_value = np.nan
     # Remove the shape on z
     shape = shape[:-1]
-    return xr.DataArray(
+    arr = xr.DataArray(
         fill_value * np.ones(shape),
         coords = [coordinates[i] for i in coordinates if i != "z"],
     )
+    arr.attrs = {"compositional_factor": compositional_factor,
+                 "density": density,
+                 "radiogenic_heat": radiogenic_heat,
+                 "pre_exponential_scale_factor": pre_exponential_scale_factor,
+                 "power_law_exponent": power_law_exponent,
+                 "activation_energy": activation_energy,
+                 "activation_volume": activation_volume}
+    return arr
 
 
 def merge_interfaces(interfaces):
@@ -64,7 +72,7 @@ def merge_interfaces(interfaces):
     return ds
 
 
-def interface_from_vertices(vertices, coordinates, direction="x"):
+def interface_from_vertices(vertices, coordinates, direction="x", compositional_factor=1.0, density=1.0, radiogenic_heat=0.0, pre_exponential_scale_factor=0.0, power_law_exponent=0.0, activation_energy=0.0, activation_volume=0.0):
     """
     Create an interface by interpolating its vertices
 
@@ -98,6 +106,13 @@ def interface_from_vertices(vertices, coordinates, direction="x"):
         da = da.expand_dims({missing_dim: coordinates[missing_dim].size})
         da.coords[missing_dim] = coordinates[missing_dim]
         da = da.transpose("x", "y")
+    da.attrs = {"compositional_factor": compositional_factor,
+                 "density": density,
+                 "radiogenic_heat": radiogenic_heat,
+                 "pre_exponential_scale_factor": pre_exponential_scale_factor,
+                 "power_law_exponent": power_law_exponent,
+                 "activation_energy": activation_energy,
+                 "activation_volume": activation_volume}
     return da
 
 
