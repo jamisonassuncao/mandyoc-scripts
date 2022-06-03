@@ -14,3 +14,6 @@ functions/io/__init__.py
 
 # Ignore input/ folder created by the scripts
 input
+
+# Ignore big folder to spare space
+src
