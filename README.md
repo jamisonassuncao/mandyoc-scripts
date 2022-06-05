@@ -2,9 +2,9 @@
 
 This repository contains `.ipynb` scripts to be used together with the Mandyoc code. 
 
-The `subduction-initial.ipynb` scriptcreates an initial subduction scenario for Mandyoc to simulate.
+The `subduction-initial.ipynb` script creates an initial subduction scenario for Mandyoc to simulate.
 
-The `plot-output.ipynb` scriptplots and creates a movie of any Mandyoc simulated scenario.
+The `plot-output.ipynb` script plots and creates a movie of any Mandyoc simulated scenario.
 
 The `slab2-temperature` script creates a temperature field for the Slab2 subduction zone geometry model (Hayes et al., 2018).
 
