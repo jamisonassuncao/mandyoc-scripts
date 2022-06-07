@@ -6,7 +6,7 @@ The `subduction-initial.ipynb` script creates an initial subduction scenario for
 
 The `plot-output.ipynb` script plots and creates a movie of any Mandyoc simulated scenario.
 
-The `slab2-temperature` script creates a temperature field for the Slab2 subduction zone geometry model (Hayes et al., 2018).
+The `slab2-temperature` script (under development) creates a temperature field for the Slab2 subduction zone geometry model (Hayes et al., 2018).
 
 The scripts were built with Jupyter Lab and its environment can be replicated with `conda` by using
 ```
