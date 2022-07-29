@@ -6,6 +6,8 @@ import gc
 import numpy as np
 import xarray as xr
 
+SEG = 365. * 24. * 60. * 60.
+
 PARAMETERS = {
     "compositional_factor": "C",
     "density": "rho",
@@ -401,6 +403,48 @@ def read_datasets(model_path, datasets):
     gc.collect()
     
     return dataset
+
+def diffuse_field(field, cond_air, kappa, dx, dz, t_max=1.0E6, fac=100):
+    """
+    Calculates the diffusion of a 2D field using finite difference.
+    ----------
+    field : numpy.ndarray
+        2D field that will be diffused.
+    conda_air : numpy.ndarray
+        2D box where value will be constant.
+    kappa : float
+        Thermal diffusivity coefficient.
+    dx: float
+        Spacing in the x (horizontal) direction.
+    dz: float
+        Spacing in the z (vertical) direction.
+    t_max: float
+        Maximum diffusion time in years.
+    fac: int
+        Number of time steps to diffuse the field.
+    Returns
+    -------
+    field :  numpy.ndarray
+        2D array containing the diffused field.
+    """
+    dx_aux = np.min([np.abs(dx),np.abs(dz)])
+    dt = np.min([dx_aux**2./(2.*kappa), t_max/fac])
+    
+    CTx = kappa * dt * SEG / (dx**2)
+    CTz = kappa * dt * SEG / (dz**2)
+    
+    t = 0.0
+    while (t<=t_max):
+        auxX = field[2:,1:-1] + field[:-2,1:-1] - 2 * field[1:-1,1:-1]
+        auxZ = field[1:-1,2:] + field[1:-1,:-2] - 2 * field[1:-1,1:-1]
+        field[1:-1,1:-1] = field[1:-1,1:-1] + (CTx * auxX) + (CTz * auxZ)
+        # boundary conditions
+        field[:,cond_air] = 0.0
+        field[0,:] = field[1,:]
+        field[-1,:] = field[-2,:]
+        # time increment
+        t += dt
+    return field
 
 def _read_scalars(path, shape, steps, quantity):
     """
