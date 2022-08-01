@@ -339,7 +339,8 @@ def read_mandyoc_output(model_path, parameters_file=PARAMETERS_FNAME, datasets=t
             datasets_aux.append(scalar)
             scalars = _read_scalars(model_path, shape, steps, quantity=scalar)
             data_aux = {scalar: (dims, scalars)}
-            xr.Dataset(data_aux, coords=coords, attrs=parameters).to_netcdf(f"{model_path}/output_{scalar}.nc")
+            xr.Dataset(data_aux, coords=coords, attrs=parameters).to_netcdf(f"{model_path}/_output_{scalar}.nc")
+            print(f"{scalar.capitalize()} files saved.")
             del scalars
             del data_aux
             gc.collect()
@@ -349,7 +350,8 @@ def read_mandyoc_output(model_path, parameters_file=PARAMETERS_FNAME, datasets=t
         datasets_aux.append("surface")
         surface = _read_surface(model_path, shape[0], steps)
         data_aux = {"surface": (profile_dims, surface)}
-        xr.Dataset(data_aux, coords=coords, attrs=parameters).to_netcdf(f"{model_path}/output_surface.nc")
+        xr.Dataset(data_aux, coords=coords, attrs=parameters).to_netcdf(f"{model_path}/_output_surface.nc")
+        print(f"Surface files saved.")
         del surface
         del data_aux
         gc.collect()
@@ -361,17 +363,18 @@ def read_mandyoc_output(model_path, parameters_file=PARAMETERS_FNAME, datasets=t
         data_aux = {}
         data_aux["velocity_x"] = (dims, velocities[0])
         data_aux["velocity_z"] = (dims, velocities[1])
-        xr.Dataset(data_aux, coords=coords, attrs=parameters).to_netcdf(f"{model_path}/output_velocity.nc")
+        xr.Dataset(data_aux, coords=coords, attrs=parameters).to_netcdf(f"{model_path}/_output_velocity.nc")
+        print(f"Velocity files saved.")
         del velocities
         del data_aux
         gc.collect()
 
-    print(f"All files read.")
+    print(f"All files read and saved.")
     # return xr.Dataset(data_vars, coords=coords, attrs=parameters)  
     
 #     empty_dataset = True
 #     for item in datasets_aux:
-#         dataset_aux = xr.open_dataset(f"{model_path}/output_{item}.nc")
+#         dataset_aux = xr.open_dataset(f"{model_path}/_output_{item}.nc")
 #         if (empty_dataset == True):
 #             dataset = dataset_aux
 #             empty_dataset = False
@@ -389,7 +392,7 @@ def read_mandyoc_output(model_path, parameters_file=PARAMETERS_FNAME, datasets=t
 def read_datasets(model_path, datasets):
     empty_dataset = True
     for item in datasets:
-        dataset_aux = xr.open_dataset(f"{model_path}/output_{item}.nc")
+        dataset_aux = xr.open_dataset(f"{model_path}/_output_{item}.nc")
         if (empty_dataset == True):
             dataset = dataset_aux
             empty_dataset = False
@@ -398,9 +401,8 @@ def read_datasets(model_path, datasets):
         del dataset_aux
     gc.collect()
 
-    dataset.to_netcdf(f"{model_path}/data.nc", format="NETCDF3_64BIT")
-    del dataset
-    gc.collect()
+    # dataset.to_netcdf(f"{model_path}/data.nc", format="NETCDF3_64BIT")
+    # gc.collect()
     
     return dataset
 
@@ -483,7 +485,7 @@ def _read_scalars(path, shape, steps, quantity):
         # Append data_step to data
         data.append(data_step)
     data = np.array(data)
-    print(f"{quantity.capitalize()} files read.")
+    print(f"{quantity.capitalize()} files read.", end=" ")
     return data
 
 def _read_velocity(path, shape, steps):
@@ -519,7 +521,7 @@ def _read_velocity(path, shape, steps):
     # Transform the velocity_* lists to arrays
     velocity_x = np.array(velocity_x)
     velocity_z = np.array(velocity_z)
-    print(f"Velocity files read.")
+    print(f"Velocity files read.", end=" ")
     return (velocity_x, velocity_z)
 
 def _read_surface(path, size, steps):
@@ -555,7 +557,7 @@ def _read_surface(path, size, steps):
         # Append data_step to data
         data.append(data_step)
     data = np.array(data)
-    print(f"Surface files read.")
+    print(f"Surface files read.", end=" ")
     return data
             
 def _read_parameters(parameters_file):
