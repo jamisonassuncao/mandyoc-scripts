@@ -1,6 +1,7 @@
 """
 Libraries to handle input and output from Mandyoc code.
 """
+import glob
 import os
 import gc
 import numpy as np
@@ -776,3 +777,101 @@ def _check_boundary_vertices(values, h_min, h_max):
             + "Remember to include boundary nodes that matches the coordinates "
             + "boundaries '{}.'".format((h_min, h_max))
         )
+
+def read_particle_path(path, position, unit_number=np.nan, ncores=np.nan):
+    """
+    Follow a particle through time.
+    
+    Parameters
+    ----------
+    path : str
+        Path to read the data.
+    position : tuple
+        (x, z) position in meters of the particle to be followed. 
+        The closest particle will be used.
+    unit_number : int
+        Lithology number of the layer.
+    ncores: int
+        Number of cores used during the simulation, necessary to read the files properly.
+    
+    Return
+    ------
+    particle_path : array (legth N)
+        Position of the particle in each time step.
+    """
+    
+    # check ncores
+    if (np.isnan(ncores)):
+        aux = glob.glob(f"{path}/step_0_*.txt")
+        ncores = np.size(aux)
+    
+    # read first step
+    first_x, first_z, first_ID, first_lithology, first_strain = _read_step(path, "step_0_", ncores)
+    
+    # order closest points to <position> at the first step
+    pos_x, pos_z = position
+    dist = np.sqrt(((first_x - pos_x)**2) + ((first_z - pos_z)**2))
+    clst = np.argsort(dist)
+    
+    # read last step
+    parameters = _read_parameters(os.path.join(path, PARAMETERS_FNAME))
+    nsteps = np.size(glob.glob(f"{path}/time_*.txt"))
+    last_step_number = int(parameters["print_step"]*(nsteps-1))
+    last_x, last_z, last_ID, last_lithology, last_strain = _read_step(path, f"step_{last_step_number}_", ncores)
+    
+    # loop through closest poinst while the closest point is not in the last step
+    print(f'Finding closest point to x: {pos_x} [m] and z: {pos_z} [m]...')
+    cont = 0
+    point_in_sim = False
+    while (point_in_sim == False):
+        clst_ID = first_ID[clst[cont]]
+        # check if closest point is in the last step
+        if clst_ID in last_ID:
+            print(f'Found point with ID: {first_ID[clst[cont]]}, x: {first_x[clst[cont]]} [m], z: {first_z[clst[cont]]} [m]')
+            point_in_sim = True
+            closest_ID = clst_ID
+        # if not in the last step, find another closer one
+        else:
+            print(f'Found point with ID: {first_ID[clst[cont]]}, x: {first_x[clst[cont]]}, z: {first_z[clst[cont]]}')
+            print(f'Point DOES NOT persist through the simulation. Finding another one...')
+            cont += 1
+
+    # read all steps storing the point position
+    print("Reading step files...", end=" ")
+    x, z = [], []
+    for i in range(0, last_step_number, parameters["print_step"]):
+        current_x, current_z, current_ID, current_lithology, current_strain = _read_step(path, f"step_{i}_", ncores)
+        arg = np.where(current_ID == closest_ID)
+        x = np.append(x, current_x[arg])
+        z = np.append(z, current_z[arg])
+    print("Step files read.")
+        
+    return x, z, closest_ID
+
+def _read_step(path, filename, ncores):
+    """
+    Read a step file.
+    
+    Parameters
+    ----------
+    path : str
+        Path to read the data.
+    filename : str
+        Auxiliary file name.
+    ncores : int
+        Number of cores the simulation used.
+        
+    Return
+    ------
+    data : array (Length N)
+        dataset containing position x, position z, ID, lithological unit
+        number, and strain.
+    """
+    
+    for i in range(ncores):
+        aux = np.loadtxt(os.path.join(path, filename + str(i) + ".txt"), unpack=True, comments="P")
+        if (i==0):
+            data = np.copy(aux)
+        else:
+            data = np.concatenate((data, aux), axis=1)
+    return data
