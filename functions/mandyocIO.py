@@ -823,14 +823,23 @@ def read_particle_path(path, position, unit_number=np.nan, ncores=np.nan):
     print(f'Finding closest point to x: {pos_x} [m] and z: {pos_z} [m]...')
     cont = 0
     point_in_sim = False
+    point_in_lit = False
     while (point_in_sim == False):
         clst_ID = first_ID[clst[cont]]
-        # check if closest point is in the last step
-        if clst_ID in last_ID:
+        # check if closest point is within the desired lithology
+        if (np.isnan(unit_number)):
+            point_in_lit = True # lithology number does not matter
+        else:
+            if int(first_lithology[clst[cont]]) == unit_number:
+                point_in_lit = True
+            else:
+                point_in_lit = False # line not necessary (this is for sanity)
+                
+        # check if closest point is in the last step or find another closer one
+        if (clst_ID in last_ID) and (point_in_lit == True):
             print(f'Found point with ID: {first_ID[clst[cont]]}, x: {first_x[clst[cont]]} [m], z: {first_z[clst[cont]]} [m]')
             point_in_sim = True
-            closest_ID = clst_ID
-        # if not in the last step, find another closer one
+            closest_ID = clst_ID                
         else:
             print(f'Found point with ID: {first_ID[clst[cont]]}, x: {first_x[clst[cont]]}, z: {first_z[clst[cont]]}')
             print(f'Point DOES NOT persist through the simulation. Finding another one...')
@@ -863,15 +872,26 @@ def _read_step(path, filename, ncores):
         
     Return
     ------
-    data : array (Length N)
-        dataset containing position x, position z, ID, lithological unit
-        number, and strain.
+    data_x : array (Length N)
+        Array containing the position x of the particle.
+    data_z : array (Length N)
+        Array containing the position z of the particle.
+    data_ID : array (Length N)
+        Array containing the ID of the particle.
+    data_lithology : array (Length N)
+        Array containing the number of the particle lithology of the particle.
+    data_strain : array (Length N)
+        Array containing the strain of the particle.
     """
-    
+    data_x, data_z, data_ID, data_lithology, data_strain = [], [], [], [], []
     for i in range(ncores):
-        aux = np.loadtxt(os.path.join(path, filename + str(i) + ".txt"), unpack=True, comments="P")
-        if (i==0):
-            data = np.copy(aux)
-        else:
-            data = np.concatenate((data, aux), axis=1)
-    return data
+        try:
+            aux_x, aux_z, aux_ID, aux_lithology, aux_strain = np.loadtxt(os.path.join(path, filename + str(i) + ".txt"), unpack=True, comments="P")
+        except:
+            continue
+        data_x = np.append(data_x, aux_x)
+        data_z = np.append(data_z, aux_z)
+        data_ID = np.append(data_ID, aux_ID)
+        data_lithology = np.append(data_lithology, aux_lithology)
+        data_strain = np.append(data_strain, aux_strain)
+    return data_x, data_z, data_ID, data_lithology, data_strain
