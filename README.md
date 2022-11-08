@@ -1,6 +1,6 @@
 # Simple scripts for Mandyoc
 
-This repository contains `.ipynb` scripts to be used together with the Mandyoc code (Sacek et al., 2022). 
+This repository contains `.ipynb` scripts to be used together with the Mandyoc code ([`Sacek et al., 2022`](https://joss.theoj.org/papers/10.21105/joss.04070)). 
 
 The [`plot-output.ipynb`](https://github.com/jamisonassuncao/mandyoc-scripts/blob/master/plot-output.ipynb) script both plots and creates a movie of any Mandyoc simulated scenario.
 
