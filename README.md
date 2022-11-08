@@ -18,5 +18,5 @@ Once installed, the environment can be accessed by activating it with
 conda activate mpy
 ```
 
-The code is built on top of Agustina Pesces' codes.
+The code is built on top of [`Agustina Pesces`](https://github.com/aguspesce)' codes.
 
