@@ -39,7 +39,7 @@ PARAMETERS_FNAME = "param.txt"
 
 # Define which datasets are scalars measured on the nodes of the grid, e.g.
 # surface and velocity are not scalars.
-SCALARS = tuple(OUTPUTS.keys())[:6]
+SCALARS = tuple(OUTPUTS.keys())[:7]
 
 def make_coordinates(region, shape):
     """
