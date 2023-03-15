@@ -16,7 +16,7 @@ PARAMETERS = {
     "pre-exponential_scale_factor": "A",
     "power_law_exponent": "n",
     "activation_energy": "Q",
-    "activation_volume": "V",
+    "activation_volume": "V"
 }
 
 TEMPERATURE_HEADER = "T1\nT2\nT3\nT4"
@@ -175,7 +175,7 @@ def merge_interfaces(interfaces):
             ds = interfaces[name].to_dataset(name=name)
     return ds
 
-def save_interfaces(interfaces, parameters, path, fname='interfaces.txt'):
+def save_interfaces(interfaces, parameters, path, strain_softening, fname='interfaces.txt'):
     """
     Save the interfaces and the rheological parameters as an ASCII file.
 
@@ -192,14 +192,19 @@ def save_interfaces(interfaces, parameters, path, fname='interfaces.txt'):
             - ``pre-exponential scale factor``,
             - ``power law exponent``,
             - ``activation energy``,
-            - ``activation volume``
+            - ``activation volume``,
+            - ``weakening seed``
+            - ``cohesion max``
+            - ``cohesion min``
+            - ``friction angle min``
+            - ``friction angle max``
     path : str
         Path to save the file.
     fname : str (optional)
         Name to save the interface file. Default ``interface.txt``
     """
     # Check if givens parameters are consistent
-    _check_necessary_parameters(parameters, interfaces)
+    _check_necessary_parameters(parameters, interfaces, strain_softening)
 
     # Generate the header with the layers parameters
     header = []
@@ -661,10 +666,23 @@ def _read_times(path, print_step, max_steps, steps_slice):
     steps = np.array(steps, dtype=int)
     return steps, times
 
-def _check_necessary_parameters(parameters, interfaces):
+def _check_necessary_parameters(parameters, interfaces, strain_softening):
     """
     Check if there all parameters are given (not checking number).
     """
+    if (strain_softening):
+        PARAMETERS['weakening_seed'] = 'weakening_seed'
+        PARAMETERS['cohesion_min'] = 'cohesion_min'
+        PARAMETERS['cohesion_max'] = 'cohesion_max'
+        PARAMETERS['friction_angle_min'] = 'friction_angle_min'
+        PARAMETERS['friction_angle_max'] = 'friction_angle_max'
+    else:
+        PARAMETERS.pop('weakening_seed', None)
+        PARAMETERS.pop('cohesion_min', None)
+        PARAMETERS.pop('cohesion_max', None)
+        PARAMETERS.pop('friction_angle_min', None)
+        PARAMETERS.pop('friction_angle_max', None)
+
     for parameter in PARAMETERS:
         if parameter not in parameters:
             raise ValueError(
