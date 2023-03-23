@@ -329,6 +329,8 @@ def read_mandyoc_output(model_path, parameters_file=PARAMETERS_FNAME, datasets=t
     coordinates = np.array(aux_coords["x"]), np.array(aux_coords["z"])
     # Get array of times and steps
     steps, times = _read_times(model_path, parameters["print_step"], parameters["step_max"], steps_slice)
+    # steps = steps[::2]
+    # times = times[::2]
     end = np.size(times)
     # Create the coordinates dictionary containing the coordinates of the nodes
     # and the time and step arrays. Then create data_vars dictionary containing
