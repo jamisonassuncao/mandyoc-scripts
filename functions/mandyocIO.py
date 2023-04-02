@@ -287,7 +287,7 @@ def save_temperature(temperatures, path, fname="input_temperature_0.txt"):
         os.path.join(path, fname), temperatures.values.ravel(order="F"), header=TEMPERATURE_HEADER
     )
     
-def read_mandyoc_output(model_path, parameters_file=PARAMETERS_FNAME, datasets=tuple(OUTPUTS.keys()), steps_slice=None):
+def read_mandyoc_output(model_path, parameters_file=PARAMETERS_FNAME, datasets=tuple(OUTPUTS.keys()), skip=1, steps_slice=None):
     """
     Read the files  generate by Mandyoc code
     Parameters
@@ -311,6 +311,8 @@ def read_mandyoc_output(model_path, parameters_file=PARAMETERS_FNAME, datasets=t
             - ``velocity``
             - ``surface``
         By default, every dataset will be read.
+    skip: int
+        Reads files every <skip> value to save mamemory.
     steps_slice : tuple
         Slice of steps to generate the step array. If it is None, it is taken
         from the folder where the Mandyoc files are located.
@@ -329,8 +331,8 @@ def read_mandyoc_output(model_path, parameters_file=PARAMETERS_FNAME, datasets=t
     coordinates = np.array(aux_coords["x"]), np.array(aux_coords["z"])
     # Get array of times and steps
     steps, times = _read_times(model_path, parameters["print_step"], parameters["step_max"], steps_slice)
-    # steps = steps[::2]
-    # times = times[::2]
+    steps = steps[::skip]
+    times = times[::skip]
     end = np.size(times)
     # Create the coordinates dictionary containing the coordinates of the nodes
     # and the time and step arrays. Then create data_vars dictionary containing
