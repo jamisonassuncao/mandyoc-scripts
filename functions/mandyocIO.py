@@ -39,7 +39,7 @@ PARAMETERS_FNAME = "param.txt"
 
 # Define which datasets are scalars measured on the nodes of the grid, e.g.
 # surface and velocity are not scalars.
-SCALARS = tuple(OUTPUTS.keys())[:6]
+SCALARS = tuple(OUTPUTS.keys())[:7]
 
 def make_coordinates(region, shape):
     """
@@ -282,7 +282,7 @@ def save_temperature(temperatures, path, fname="input_temperature_0.txt"):
         os.path.join(path, fname), temperatures.values.ravel(order="F"), header=TEMPERATURE_HEADER
     )
     
-def read_mandyoc_output(model_path, parameters_file=PARAMETERS_FNAME, datasets=tuple(OUTPUTS.keys()), steps_slice=None):
+def read_mandyoc_output(model_path, parameters_file=PARAMETERS_FNAME, datasets=tuple(OUTPUTS.keys()), steps_slice=None, save_big_dataset=False):
     """
     Read the files  generate by Mandyoc code
     Parameters
@@ -309,6 +309,8 @@ def read_mandyoc_output(model_path, parameters_file=PARAMETERS_FNAME, datasets=t
     steps_slice : tuple
         Slice of steps to generate the step array. If it is None, it is taken
         from the folder where the Mandyoc files are located.
+    save_big_dataset : bool
+        Save all datasets in a single dataset. Recomended to small models
     filetype : str
         Files format to be read. Default to ``"ascii"``.
     Returns
@@ -345,6 +347,7 @@ def read_mandyoc_output(model_path, parameters_file=PARAMETERS_FNAME, datasets=t
             del scalars
             del data_aux
             gc.collect()
+    
     
     # Read surface if needed
     if "surface" in datasets:
@@ -387,10 +390,10 @@ def read_mandyoc_output(model_path, parameters_file=PARAMETERS_FNAME, datasets=t
 #     dataset.to_netcdf(f"{model_path}/data.nc", format="NETCDF3_64BIT")
     # del dataset
     # gc.collect()
-
+    
     return datasets_aux
 
-def read_datasets(model_path, datasets):
+def read_datasets(model_path, datasets, save_big_dataset=False):
     empty_dataset = True
     for item in datasets:
         dataset_aux = xr.open_dataset(f"{model_path}/_output_{item}.nc")
@@ -402,8 +405,11 @@ def read_datasets(model_path, datasets):
         del dataset_aux
     gc.collect()
 
-    # dataset.to_netcdf(f"{model_path}/data.nc", format="NETCDF3_64BIT")
-    # gc.collect()
+    if (save_big_dataset):
+        print(f'Saving dataset with all Mandyoc data')
+        dataset.to_netcdf(f"{model_path}/data.nc", format="NETCDF3_64BIT")
+        print(f"Big dataset file saved.")
+        gc.collect()
     
     return dataset
 
