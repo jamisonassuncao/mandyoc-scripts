@@ -421,7 +421,8 @@ def read_datasets(model_path, datasets, save_big_dataset=False):
         print(f'Saving dataset with all Mandyoc data')
         dataset.to_netcdf(f"{model_path}/data.nc", format="NETCDF3_64BIT")
         print(f"Big dataset file saved.")
-        gc.collect()
+        # del dataset
+        # gc.collect()
     
     return dataset
 
@@ -954,8 +955,40 @@ def _extract_interface(z, Z, Nx, Rhoi, rho):
 
 def _log_fmt(x, pos):
     return "{:.0f}".format(np.log10(x))
+
+def change_dataset(properties, datasets):
+    '''
+    Create new_datasets based on the properties that will be plotted
     
-def plot_data(dataset, prop, xlims, ylims, model_path, output_path, save_frames=True):
+    Parameters
+    ----------
+    properties: list of strings
+        Properties to plot.
+
+    datasets: list of strings
+        List of saved properties.
+
+    Returns
+    -------
+    new_datasets: list of strings
+        New list of properties that will be read.
+    '''
+    
+    new_datasets = []
+    for prop in properties:
+        if (prop in datasets) and (prop not in new_datasets):
+            new_datasets.append(prop)
+        if (prop == "lithology") and ("strain" not in new_datasets):
+            new_datasets.append("strain")
+        if (prop == "temperature_anomaly") and ("temperature" not in new_datasets):
+            new_datasets.append("temperature")
+            
+        if (prop == "lithology" or prop == 'temperature_anomlay') and ("density" not in new_datasets):
+            new_datasets.append("density")
+            
+    return new_datasets
+
+def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frames=True):
     '''
     Plot and save data from mandyoc according to a given property and domain limits.
 
