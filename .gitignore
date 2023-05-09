@@ -17,3 +17,6 @@ input
 
 # Ignore big folder to spare space
 src
+
+# Ignore contente of folder to spare space
+out/*
