@@ -1,0 +1,51 @@
+#lines
+lines.linewidth     : 1.5
+lines.linestyle     : -  
+lines.color         : black
+ 
+#fonts & text
+font.family         : serif
+font.weight         : normal
+font.size           : 10.0
+text.color          : black
+text.usetex         : True
+ 
+#axes & ticks
+axes.edgecolor      : black
+axes.linewidth      : 1.0  
+axes.grid           : False
+axes.titlesize      : x-large
+axes.labelsize      : x-large
+axes.labelweight    : normal
+axes.labelcolor     : black
+axes.formatter.limits : -6, 6
+ 
+xtick.major.size     : 7
+xtick.minor.size     : 4
+xtick.major.pad      : 8
+xtick.minor.pad      : 8
+xtick.labelsize      : x-large
+xtick.minor.width    : 1.0
+xtick.major.width    : 1.0
+xtick.minor.visible  : False 
+
+ytick.major.size     : 7
+ytick.minor.size     : 4
+ytick.major.pad      : 8
+ytick.minor.pad      : 8
+ytick.labelsize      : x-large
+ytick.minor.width    : 1.0
+ytick.major.width    : 1.0
+ 
+axes.prop_cycle      : cycler('color',['xkcd:cerulean blue', 'xkcd:scarlet', 'xkcd:dark green', 'xkcd:light orange', 'xkcd:lighter purple', 'xkcd:bright aqua', 'xkcd:dirt brown', 'xkcd:gunmetal', 'xkcd:dark hot pink', 'xkcd:very dark brown'])
+
+#legends
+legend.numpoints     : 1
+legend.fontsize      : x-large
+legend.shadow        : False
+legend.frameon       : True
+legend.fancybox      : True
+
+#figure
+figure.titlesize : x-large
+figure.figsize   : 10, 8 
