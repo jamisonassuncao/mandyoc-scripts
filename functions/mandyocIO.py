@@ -477,6 +477,147 @@ def diffuse_field(field, cond_air, kappa, dx, dz, t_max=1.0E6, fac=100):
         t += dt
     return field
 
+def build_parameter_file(**kwargs):
+    """
+    Creates a parameters dicitionary containing all the parameters that will be
+    necessary fot the simulation.
+
+    Parameters
+    ----------
+    **kwargs : dict
+        Arguments used in the paramenter file.
+
+    Returns
+    -------
+    params : dict
+        Complete parameter file dictionary.
+    """
+    defaults = {
+        'nx' : None,
+        'nz' : None,
+        'lx' : None,
+        'lz' : None, 
+
+        'aux00': '# Simulation options',
+        'solver' : 'direct',
+        'denok' : 1.0e-10,
+        'rtol' : 1.0e-7,
+        'RK4' : 'Euler',
+        'Xi_min' : 1.0e-7,
+        'random_initial_strain' : 0.0,
+        'pressure_const' : -1.0,
+        'initial_dynamic_range' : True,
+        'periodic_boundary' : False,
+        'high_kappa_in_asthenosphere' : False,
+        'basal_heat' : -1.0,
+
+        'aux01': '# Particles options',
+        'particles_per_element' : 81,
+        'particles_per_element_x' : 0,
+        'particles_per_element_z' : 0,
+        'particles_perturb_factor' : 0.7,
+
+        'aux02': '# Surface processes',
+        'sp_surface_tracking' : False,
+        'sea_level' : 0.0,
+        'sp_surface_processes' : False,
+        'sp_dt' : 0,
+        'a2l' : True,
+        'sp_mode' : 1,
+        'free_surface_stab' : True,
+        'theta_FSSA' : 0.5,
+        'sticky_blanket_air' : False,
+        'precipitation_profile_from_ascii' : False,
+        'climate_change_from_ascii' : False,
+
+        'aux03': '# Time constrains',
+        'step_max' : 7000,
+        'time_max' : 10.0e6,
+        'dt_max' : 10.0e3,
+        'step_print' : 10,
+        'sub_division_time_step' : 1.0,
+        'initial_print_step' : 0,
+        'initial_print_max_time' : 1.0e6,
+
+        'aux04': '# Viscosity',
+        'viscosity_reference' : None,
+        'viscosity_max' : None,
+        'viscosity_min' : None,
+        'viscosity_per_element' : 'constant',
+        'viscosity_mean_method' : 'arithmetic',
+        'viscosity_dependence' : 'pressure',
+
+        'aux05': '# External ASCII inputs/outputs',
+        'interfaces_from_ascii' : True,
+        'n_interfaces' : None,
+        'temperature_from_ascii' : True,
+        'velocity_from_ascii' : False,
+        'variable_bcv' : False,
+        'multi_velocity' : False,
+        'binary_output' : False,
+        'print_step_files' : True,
+
+        'aux06': '# Physical parameters',
+        'temperature_difference' : None,
+        'thermal_expansion_coefficient' : None,
+        'thermal_diffusivity_coefficient' : None,
+        'gravity_acceleration' : None,
+        'density_mantle' : 3300.,
+        'heat_capacity' : None,
+        'adiabatic_component' : None,
+        'radiogenic_component' : None,
+
+        'aux07': '# Strain softening',
+        'non_linear_method' : 'on',
+        'plasticity' : 'on',
+        'weakening_min' : 0.05,
+        'weakening_max' : 1.05,
+
+        'aux08': '# Velocity boundary conditions',
+        'top_normal_velocity' : 'fixed',
+        'top_tangential_velocity' : 'free',
+        'bot_normal_velocity' : 'fixed',
+        'bot_tangential_velocity' : 'free',
+        'left_normal_velocity' : 'fixed',
+        'left_tangential_velocity' : 'free',
+        'right_normal_velocity' : 'fixed ',
+        'right_tangential_velocity' : 'free',
+
+        'aux09': '# Temperature boundary conditions',
+        'top_temperature' : 'fixed',
+        'bot_temperature' : 'fixed',
+        'left_temperature' : 'fixed',
+        'right_temperature' : 'free',
+        'rheology_model' : 19,
+        'T_initial' : 0,
+    }
+
+    params = {}
+    for key, value in defaults.items():
+        param = kwargs.get(key, value)
+        if param is None:
+            raise ValueError(f"The parameter '{key}' is mandatory.")
+        params[key] = str(param)
+    return params
+
+def save_parameter_file(params, run_dir):
+    """
+    Saves the parameter dictionary into a file called param.txt
+
+    Parameters
+    ----------
+
+    params : dict
+        Dictionary containing the parameters of the param.txt file.
+    """
+    # Create the parameter file
+    with open(os.path.join(run_dir,"param.txt"), "w") as f:
+        for key, value in params.items():
+            if key[:3] == "aux":
+                f.write(f"\n{value}\n")
+            else:
+                f.write('{:<32} = {}\n'.format(key, value))
+
 def _read_scalars(path, shape, steps, quantity):
     """
     Read Mandyoc scalar data
