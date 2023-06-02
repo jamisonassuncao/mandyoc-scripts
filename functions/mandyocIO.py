@@ -1151,7 +1151,7 @@ def change_dataset(properties, datasets):
             
     return new_datasets
 
-def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frames=True):
+def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frames=True, plot_isotherms=True, isotherms = [400, 600, 800, 1000, 1300]):
     '''
     Plot and save data from mandyoc according to a given property and domain limits.
 
@@ -1248,6 +1248,22 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
     
     val_minmax = vals_minmax[prop]
     
+    if(plot_isotherms == True and prop != 'topography'): #Plot isotherms
+        Temperi = dataset.temperature.T
+        
+        isot_colors = []
+        for isotherm in isotherms:
+            isot_colors.append('red')
+            
+        cs = ax.contour(xx, zz, Temperi, 100, levels=isotherms, colors=isot_colors)
+        
+        # if(instant == instants[0]):
+        #     fmt = {}
+        #     for level, isot in zip(cs.levels, isotherms):
+        #         fmt[level] = str(level) + r'$^{\circ}$C'
+
+        #     ax.clabel(cs, cs.levels, fmt=fmt, inline=True, use_clabeltext=True)
+
     #dealing with special data
     if(prop == 'lithology'):
         data = dataset['strain']
