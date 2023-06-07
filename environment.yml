@@ -15,3 +15,5 @@ dependencies:
   - ipyvtklink
   - shapely
   - astropy
+  - pymp-pypi
+  - numba
