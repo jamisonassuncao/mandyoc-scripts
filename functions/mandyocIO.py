@@ -17,6 +17,8 @@ from matplotlib.patches import FancyBboxPatch
 from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
+import matplotlib.mlab as mlab
+import matplotlib.colors
 
 
 SEG = 365. * 24. * 60. * 60.
@@ -1150,8 +1152,48 @@ def change_dataset(properties, datasets):
             new_datasets.append("density")
             
     return new_datasets
+def _calc_melt_dry(To,Po):
 
-def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frames=True, plot_isotherms=True, isotherms = [400, 600, 800, 1000, 1300]):
+    P=np.asarray(Po)/1.0E6 # Pa -> MPa
+    T=np.asarray(To)+273.15 #oC -> Kelvin
+
+    Tsol = 1394 + 0.132899*P - 0.000005104*P**2
+    cond = P>10000.0
+    Tsol[cond] = 2212 + 0.030819*(P[cond] - 10000.0)
+
+    Tliq = 2073 + 0.114*P
+
+    X = P*0
+
+    cond=(T>Tliq) #melt
+    X[cond]=1.0
+
+    cond=(T<Tliq)&(T>Tsol) #partial melt
+    X[cond] = ((T[cond]-Tsol[cond])/(Tliq[cond]-Tsol[cond]))
+
+    return(X)
+
+def _calc_melt_wet(To,Po):
+    P=np.asarray(Po)/1.0E6 # Pa -> MPa
+    T=np.asarray(To)+273.15 #oC -> Kelvin
+
+    Tsol = 1240 + 49800/(P + 323)
+    cond = P>2400.0
+    Tsol[cond] = 1266 - 0.0118*P[cond] + 0.0000035*P[cond]**2
+
+    Tliq = 2073 + 0.114*P
+
+    X = P*0
+
+    cond=(T>Tliq)
+    X[cond]=1.0
+
+    cond=(T<Tliq)&(T>Tsol)
+    X[cond] = ((T[cond]-Tsol[cond])/(Tliq[cond]-Tsol[cond]))
+
+    return(X)
+
+def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frames=True, plot_isotherms=True, isotherms = [400, 600, 800, 1000, 1300], plot_melt=False, melt_method='dry'):
     '''
     Plot and save data from mandyoc according to a given property and domain limits.
 
@@ -1242,9 +1284,9 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
     plt.rc('xtick', labelsize = label_size)
     plt.rc('ytick', labelsize = label_size)
     
-    fig, ax = plt.subplots(1, 1, figsize=(12, 6), constrained_layout = True)
+    fig, ax = plt.subplots(1, 1, figsize=(12, 12*(Lz/Lx)), constrained_layout = True)
     #plot Time in Myr
-    ax.text(0.8, 0.95, ' {:01} Myr'.format(instant), fontsize = 18, zorder=52, transform=ax.transAxes)
+    ax.text(0.8, 0.92, ' {:01} Myr'.format(instant), fontsize = 18, zorder=52, transform=ax.transAxes)
     
     val_minmax = vals_minmax[prop]
     
@@ -1263,7 +1305,51 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
         #         fmt[level] = str(level) + r'$^{\circ}$C'
 
         #     ax.clabel(cs, cs.levels, fmt=fmt, inline=True, use_clabeltext=True)
+    if(plot_melt == True and prop != 'topography'):
+        if(melt_method == 'dry'):
+            melt = _calc_melt_dry(dataset.temperature, dataset.pressure)
+        elif(melt_method == 'wet'):
+            melt = _calc_melt_dry(dataset.temperature, dataset.pressure)
 
+        levels = np.arange(0, 16, 1)
+        extent=(0,
+                Lx/1.0e3,
+                -Lz/1.0e3 + 40,
+                0 + 40)
+        
+        cs = ax.contour(melt.T*100,
+                        levels,
+                        origin='lower',
+                        cmap='inferno',
+                        extent=extent,
+                        vmin=0, vmax=16,
+                        linewidths=0.5,
+                        # linewidths=30,
+                        zorder=30)
+
+        axmelt = inset_axes(ax,
+                            width="20%",  # width: 30% of parent_bbox width
+                            height="5%",  # height: 5%
+                            bbox_to_anchor=(-0.78,
+                                            -0.75,
+                                            1,
+                                            1),
+                            bbox_transform=ax.transAxes,
+                            )
+        
+
+        norm= matplotlib.colors.Normalize(vmin=cs.cvalues.min(), vmax=cs.cvalues.max())
+        sm = plt.cm.ScalarMappable(norm=norm, cmap = cs.cmap)
+        sm.set_array([])
+
+        cb = fig.colorbar(sm,
+                    cax=axmelt,
+                    label='melt content [%]',
+                    orientation='horizontal',
+                    fraction=0.008,
+                    pad=0.02)
+        cb.ax.tick_params(labelsize=12)
+        
     #dealing with special data
     if(prop == 'lithology'):
         data = dataset['strain']
@@ -1319,9 +1405,12 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
         
         #creating colorbar
         axins1 = inset_axes(ax,
-                            width="30%",  # width: 30% of parent_bbox width
+                            width="25%",  # width: 30% of parent_bbox width
                             height="5%",  # height: 5%
-                            bbox_to_anchor=(-0.02, -0.82, 1, 1),
+                            bbox_to_anchor=(-0.02,
+                                            -0.75,
+                                            1,
+                                            1),
                             bbox_transform=ax.transAxes,
                             )
 
@@ -1334,6 +1423,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
                            format=_log_fmt)
 
         clb.set_label(props_label[prop], fontsize=12)
+        clb.ax.tick_params(labelsize=12)
         clb.minorticks_off()
     
     elif (prop == 'density' or prop == 'pressure' or prop == 'temperature' or prop == 'temperature_anomaly'): #properties that need a regular colorbar
@@ -1345,9 +1435,12 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
                        aspect = 'auto')
         
         axins1 = inset_axes(ax,
-                            width="30%",  # width: 30% of parent_bbox width
+                            width="25%",  # width: 30% of parent_bbox width
                             height="5%",  # height: 5%
-                            bbox_to_anchor=(-0.02, -0.82, 1, 1),
+                            bbox_to_anchor=(-0.02,
+                                            -0.75,
+                                            1,
+                                            1),
                             bbox_transform=ax.transAxes,
                             )
         
@@ -1368,6 +1461,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
                            format=fmt)
 
         clb.set_label(props_label[prop], fontsize=12)
+        clb.ax.tick_params(labelsize=12)
         clb.minorticks_off()
         
     elif(prop == 'strain'):
@@ -1418,12 +1512,16 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
                      vmax = 0.7,
                      aspect = 'auto')
         #legend box
-        b1 = [0.84, #horizontal position
-              0.22, #vertical position
-              0.15, #horizontal sift
-              0.20  #scale
-             ]
-        bv1 = plt.axes(b1)
+        bv1 = inset_axes(ax,
+                        width="20%",  # width: 30% of parent_bbox width
+                        height="30%",  # height: 5%
+                        bbox_to_anchor=(0.045,#horizontal position
+                                        -0.49,#vertical position
+                                        1,#
+                                        1),#
+                        bbox_transform=ax.transAxes
+                        )
+        
         A = np.zeros((100, 10))
 
         A[:25, :] = 2700
@@ -1438,7 +1536,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
 
         xxA, yyA = np.meshgrid(xA, yA)
         air_threshold = 200
-        plt.contourf(
+        bv1.contourf(
             xxA,
             yyA,
             A,
@@ -1446,7 +1544,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
             colors=[color_uc, color_lc, color_lit, color_ast],
         )
 
-        plt.imshow(
+        bv1.imshow(
             xxA[::-1, :],
             extent=[-0.5, 0.9, 0, 1.5],
             zorder=100,
@@ -1457,8 +1555,8 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
         )
 
         bv1.set_yticklabels([])
-        plt.xlabel(r"log$(\varepsilon_{II})$", size=14)
-        bv1.tick_params(axis='x', which='major', labelsize=12)
+        bv1.set_xlabel(r"log$(\varepsilon_{II})$", size=14)
+        bv1.tick_params(axis='x', which='major', labelsize=10)
         bv1.set_xticks([-0.5, 0, 0.5])
         bv1.set_yticks([])
         bv1.xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
@@ -1496,6 +1594,11 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
         ax.set_xlabel("Distance (km)", fontsize = label_size)
         ax.set_ylabel("Topography (km)", fontsize = label_size)
         
-    if (save_frames == True):    
-        fig_name = f"{output_path}/{model_name}_{prop}_{str(int(dataset.step)).zfill(6)}.png"
+    if (save_frames == True):
+
+        if(plot_melt==True):
+                fig_name = f"{output_path}/{model_name}_{prop}_MeltFrac_{melt_method}_{str(int(dataset.step)).zfill(6)}.png"
+        else:
+            fig_name = f"{output_path}/{model_name}_{prop}_{str(int(dataset.step)).zfill(6)}.png"
+
         plt.savefig(fig_name, dpi=400)

@@ -62,8 +62,8 @@ print(f'{float(np.max(dataset.pressure[idx])/1.0e9)} GPa')
 plt.close()
 fig, ax = plt.subplots(1, 1, figsize=(8,6), constrained_layout=True)
 
-# im = ax.contourf(np.asarray(dataset.temperature[idx]).T, np.asarray(dataset.pressure[idx]/1.0E9).T, melt_dry.T*100)
-im = ax.imshow(melt_dry.T*100., origin='lower', extent=(0, 1000, -300 + 40, 0 + 40), vmin=0, vmax=np.max(melt_dry)*100)
+im = ax.contourf(np.asarray(dataset.temperature[idx]).T, np.asarray(dataset.pressure[idx]/1.0E9).T, melt_dry.T*100)
+# im = ax.imshow(melt_dry.T*100., origin='lower', extent=(0, 1000, -300 + 40, 0 + 40), vmin=0, vmax=np.max(melt_dry)*100)
 fig.colorbar(im, label='melt content [%]',
 	orientation='vertical',
     fraction=0.015, pad=0.02)
