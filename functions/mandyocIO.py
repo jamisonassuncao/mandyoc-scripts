@@ -1309,7 +1309,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
         if(melt_method == 'dry'):
             melt = _calc_melt_dry(dataset.temperature, dataset.pressure)
         elif(melt_method == 'wet'):
-            melt = _calc_melt_dry(dataset.temperature, dataset.pressure)
+            melt = _calc_melt_wet(dataset.temperature, dataset.pressure)
 
         levels = np.arange(0, 16, 1)
         extent=(0,
