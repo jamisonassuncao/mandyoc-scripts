@@ -1363,7 +1363,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
         data = D
         
     elif(prop == 'surface'):
-        print('Dealing with data')
+        # print('Dealing with data')
 #         topo_from_density = True
         topo_from_density = False
         
