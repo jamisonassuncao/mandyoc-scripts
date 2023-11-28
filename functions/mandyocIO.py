@@ -1266,7 +1266,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
 #                    'viscosity':           [np.log10(1.0E18), np.log10(1.0E25)]
                   }
 
-    model_name = os.path.split(model_path)[1]
+    model_name = os.path.split(model_path)[0].split('/')[-1]
 
     Nx = int(dataset.nx)
     Nz = int(dataset.nz)
@@ -1280,13 +1280,14 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
     
     #creating Canvas
     plt.close()
-    label_size=20
+    label_size=12
     plt.rc('xtick', labelsize = label_size)
     plt.rc('ytick', labelsize = label_size)
     
     fig, ax = plt.subplots(1, 1, figsize=(12, 12*(Lz/Lx)), constrained_layout = True)
+    # fig, ax = plt.subplots(1, 1, figsize=(12, 10), constrained_layout = True)
     #plot Time in Myr
-    ax.text(0.8, 0.92, ' {:01} Myr'.format(instant), fontsize = 18, zorder=52, transform=ax.transAxes)
+    ax.text(0.8, 0.85, ' {:01} Myr'.format(instant), fontsize = 18, zorder=52, transform=ax.transAxes)
     
     val_minmax = vals_minmax[prop]
     
@@ -1408,7 +1409,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
                             width="25%",  # width: 30% of parent_bbox width
                             height="5%",  # height: 5%
                             bbox_to_anchor=(-0.02,
-                                            -0.75,
+                                            -0.45,
                                             1,
                                             1),
                             bbox_transform=ax.transAxes,
@@ -1438,7 +1439,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
                             width="25%",  # width: 30% of parent_bbox width
                             height="5%",  # height: 5%
                             bbox_to_anchor=(-0.02,
-                                            -0.75,
+                                            -0.45,
                                             1,
                                             1),
                             bbox_transform=ax.transAxes,
@@ -1513,11 +1514,11 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
                      aspect = 'auto')
         #legend box
         bv1 = inset_axes(ax,
-                        width="20%",  # width: 30% of parent_bbox width
-                        height="30%",  # height: 5%
+                        width="30%",  # width: 30% of parent_bbox width
+                        height="45%",  # height: 5%
                         bbox_to_anchor=(0.045,#horizontal position
-                                        -0.49,#vertical position
-                                        1,#
+                                        -0.16,#vertical position
+                                        1.07,#
                                         1),#
                         bbox_transform=ax.transAxes
                         )
@@ -1555,7 +1556,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
         )
 
         bv1.set_yticklabels([])
-        bv1.set_xlabel(r"log$(\varepsilon_{II})$", size=14)
+        bv1.set_xlabel(r"log$(\varepsilon_{II})$", size=10)
         bv1.tick_params(axis='x', which='major', labelsize=10)
         bv1.set_xticks([-0.5, 0, 0.5])
         bv1.set_yticks([])
