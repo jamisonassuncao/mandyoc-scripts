@@ -1266,7 +1266,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
 #                    'viscosity':           [np.log10(1.0E18), np.log10(1.0E25)]
                   }
 
-    model_name = os.path.split(model_path)[0].split('/')[-1]
+    model_name = model_path.split('/')[-1] #os.path.split(model_path)[0].split('/')[-1]
 
     Nx = int(dataset.nx)
     Nz = int(dataset.nz)
