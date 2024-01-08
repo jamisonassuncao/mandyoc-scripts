@@ -1562,6 +1562,16 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
         bv1.set_yticks([])
         bv1.xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
             
+    
+    if(plot_particles == True):
+        if(prop != 'surface'):
+            ncores = 20
+            
+            data_x, data_z, data_ID, data_lithology, data_strain = _read_step(model_path, 'step', ncores)
+        else:
+            print('Error: You cannot print particles in the Surface plot!')
+            return()
+    
     if(prop != 'surface'):
         #Filling above topographic surface
         Rhoi = dataset.density.T
