@@ -1410,7 +1410,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
                             width="25%",  # width: 30% of parent_bbox width
                             height="5%",  # height: 5%
                             bbox_to_anchor=(-0.02,
-                                            -0.8,
+                                            -0.6,
                                             1,
                                             1),
                             bbox_transform=ax.transAxes,
@@ -1440,7 +1440,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
                             width="25%",  # width: 30% of parent_bbox width
                             height="5%",  # height: 5%
                             bbox_to_anchor=(-0.02,
-                                            -0.8,
+                                            -0.6,
                                             1,
                                             1),
                             bbox_transform=ax.transAxes,
@@ -1515,12 +1515,12 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
                      aspect = 'auto')
         #legend box
         bv1 = inset_axes(ax,
-                        width="10%",  # width: 30% of parent_bbox width
-                        height="25%",  # height: 5%
+                        width="15%",  # width: 30% of parent_bbox width
+                        height="35%",  # height: 5%
                         bbox_to_anchor=(-0.08,#horizontal position
-                                        -0.6,#vertical position
-                                        1.07,#
-                                        1),#
+                                        -0.55,#vertical position
+                                        1.1,#
+                                        1.4),#
                         bbox_transform=ax.transAxes
                         )
         
@@ -1608,10 +1608,16 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
         ax.set_ylabel("Topography (km)", fontsize = label_size)
         
     if (save_frames == True):
+        fig_name = f"{output_path}/{model_name}_{prop}"
 
         if(plot_melt==True):
-                fig_name = f"{output_path}/{model_name}_{prop}_MeltFrac_{melt_method}_{str(int(dataset.step)).zfill(6)}.png"
-        else:
-            fig_name = f"{output_path}/{model_name}_{prop}_{str(int(dataset.step)).zfill(6)}.png"
+                # fig_name = f"{output_path}/{model_name}_{prop}_MeltFrac_{melt_method}_{str(int(dataset.step)).zfill(6)}.png"
+                fig_name = f"{fig_name}_MeltFrac_{melt_method}"
+        
+        if(plot_particles == True):
+                fig_name = f"{fig_name}_particles"
+        
+        fig_name = f"{fig_name}_{str(int(dataset.step)).zfill(6)}.png"
+
 
         plt.savefig(fig_name, dpi=400)
