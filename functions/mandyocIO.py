@@ -1079,7 +1079,7 @@ def _read_step(path, filename, ncores):
         data_ID = np.append(data_ID, aux_ID)
         data_lithology = np.append(data_lithology, aux_lithology)
         data_strain = np.append(data_strain, aux_strain)
-    return data_x, data_z, data_ID, data_lithology, data_strain
+    return np.asarray(data_x), np.asarray(data_z), np.asarray(data_ID), np.asarray(data_lithology), np.asarray(data_strain)
 
 
 def _extract_interface(z, Z, Nx, Rhoi, rho):
@@ -1569,7 +1569,23 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
             ncores = 20
             data_x, data_z, data_ID, data_lithology, data_strain = _read_step(model_path, f"step_{int(dataset.step)}_", ncores)
             # ax.scatter(data_x/1000, data_z/1000, 2, c='xkcd:black', marker='.', zorder=30)
-            ax.plot(data_x/1000, data_z/1000, "o", color='xkcd:black', markersize=0.08, alpha=1.0, zorder=30)
+
+            print(len(data_lithology))
+            cond_litho = data_lithology > 0
+            cond_ast = data_lithology == 0
+
+            # if(prop=='lithology'):
+            #     color_litho = 'xkcd:bright pink'
+            #     color_ast = 'xkcd:black'
+            # else:
+            #     color_litho = 'xkcd:bright green'
+            #     color_ast = 'xkcd:black'
+
+            color_litho = 'xkcd:bright pink'
+            color_ast = 'xkcd:black'
+
+            ax.plot(data_x[cond_litho]/1000, data_z[cond_litho]/1000, "o", color=color_litho, markersize=0.2, alpha=1.0, zorder=30)
+            ax.plot(data_x[cond_ast]/1000, data_z[cond_ast]/1000, "o", color=color_ast, markersize=0.2, alpha=1.0, zorder=30)
         # else:
         #     print('Error: You cannot print particles in the Surface plot!')
         #     return()
