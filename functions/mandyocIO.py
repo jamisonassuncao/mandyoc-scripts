@@ -1570,7 +1570,6 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
             data_x, data_z, data_ID, data_lithology, data_strain = _read_step(model_path, f"step_{int(dataset.step)}_", ncores)
             # ax.scatter(data_x/1000, data_z/1000, 2, c='xkcd:black', marker='.', zorder=30)
 
-            print(len(data_lithology))
             cond_litho = data_lithology > 0
             cond_ast = data_lithology == 0
 
@@ -1581,8 +1580,8 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
             #     color_litho = 'xkcd:bright green'
             #     color_ast = 'xkcd:black'
 
-            color_litho = 'xkcd:bright pink'
-            color_ast = 'xkcd:black'
+            color_litho = 'xkcd:black'
+            color_ast = 'xkcd:bright pink'
 
             ax.plot(data_x[cond_litho]/1000, data_z[cond_litho]/1000, "o", color=color_litho, markersize=0.2, alpha=1.0, zorder=30)
             ax.plot(data_x[cond_ast]/1000, data_z[cond_ast]/1000, "o", color=color_ast, markersize=0.2, alpha=1.0, zorder=30)
