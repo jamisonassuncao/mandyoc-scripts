@@ -1519,8 +1519,8 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
                         height="35%",  # height: 5%
                         bbox_to_anchor=(-0.08,#horizontal position
                                         -0.55,#vertical position
-                                        1.1,#
-                                        1.4),#
+                                        1.1,# width
+                                        1.4),# height
                         bbox_transform=ax.transAxes
                         )
         
