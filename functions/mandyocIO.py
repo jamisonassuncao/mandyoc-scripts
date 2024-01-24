@@ -1407,13 +1407,14 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
         
         #creating colorbar
         axins1 = inset_axes(ax,
-                            width="25%",  # width: 30% of parent_bbox width
-                            height="5%",  # height: 5%
-                            bbox_to_anchor=(-0.02,
-                                            -0.6,
-                                            1,
-                                            1),
-                            bbox_transform=ax.transAxes,
+                            loc='lower right',
+                            width="100%",  # respective to parent_bbox width
+                            height="100%",  # respective to parent_bbox width
+                            bbox_to_anchor=(0.7,#horizontal position respective to parent_bbox or "loc" position
+                                            0.3,# vertical position
+                                            0.25,# width
+                                            0.05),# height
+                            bbox_transform=ax.transAxes
                             )
 
         clb = fig.colorbar(im,
@@ -1437,13 +1438,14 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
                        aspect = 'auto')
         
         axins1 = inset_axes(ax,
-                            width="25%",  # width: 30% of parent_bbox width
-                            height="5%",  # height: 5%
-                            bbox_to_anchor=(-0.02,
-                                            -0.6,
-                                            1,
-                                            1),
-                            bbox_transform=ax.transAxes,
+                            loc='lower right',
+                            width="100%",  # respective to parent_bbox width
+                            height="100%",  # respective to parent_bbox width
+                            bbox_to_anchor=(0.7,#horizontal position respective to parent_bbox or "loc" position
+                                            0.3,# vertical position
+                                            0.25,# width
+                                            0.05),# height
+                            bbox_transform=ax.transAxes
                             )
         
 #         ticks = np.linspace(val_minmax[0], val_minmax[1], 6, endpoint=True)
@@ -1515,12 +1517,13 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
                      aspect = 'auto')
         #legend box
         bv1 = inset_axes(ax,
-                        width="15%",  # width: 30% of parent_bbox width
-                        height="35%",  # height: 5%
-                        bbox_to_anchor=(-0.08,#horizontal position
-                                        -0.55,#vertical position
-                                        1.1,# width
-                                        1.4),# height
+                        loc='lower right',
+                        width="100%",  # respective to parent_bbox width
+                        height="100%",  # respective to parent_bbox width
+                        bbox_to_anchor=(0.9,#horizontal position respective to parent_bbox or "loc" position
+                                        0.3,# vertical position
+                                        0.085,# width
+                                        0.35),# height
                         bbox_transform=ax.transAxes
                         )
         
@@ -1544,6 +1547,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
             A,
             levels=[air_threshold, 2750, 2900, 3365, 3900],
             colors=[color_uc, color_lc, color_lit, color_ast],
+            extent=[-0.5, 0.9, 0, 1.5]
         )
 
         bv1.imshow(
@@ -1554,6 +1558,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
             cmap=plt.get_cmap("Greys"),
             vmin=-0.5,
             vmax=0.9,
+            aspect='auto'
         )
 
         bv1.set_yticklabels([])
