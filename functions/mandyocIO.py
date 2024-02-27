@@ -1072,7 +1072,7 @@ def _read_step(path, filename, ncores):
         try:
             aux_x, aux_z, aux_ID, aux_lithology, aux_strain = np.loadtxt(os.path.join(path, f"{filename}{str(i)}.txt"), unpack=True, comments="P")
         except:
-            print('didnt read')
+            print(f"didnt read file {filename}{str(i)}.txt\n")
             continue
         data_x = np.append(data_x, aux_x)
         data_z = np.append(data_z, aux_z)
@@ -1194,7 +1194,7 @@ def _calc_melt_wet(To,Po):
 
     return(X)
 
-def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frames=True, plot_isotherms=True, plot_particles=False, isotherms = [400, 600, 800, 1000, 1300], plot_melt=False, melt_method='dry'):
+def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frames=True, plot_isotherms=True, plot_particles=False, particle_size=0.2, marker="o", ncores=20, step_plot=1, isotherms=[400, 600, 800, 1000, 1300], plot_melt=False, melt_method='dry'):
     '''
     Plot and save data from mandyoc according to a given property and domain limits.
 
@@ -1571,7 +1571,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
     
     if(plot_particles == True):
         if(prop != 'surface'):
-            ncores = 20
+            # ncores = 20
             data_x, data_z, data_ID, data_lithology, data_strain = _read_step(model_path, f"step_{int(dataset.step)}_", ncores)
             # ax.scatter(data_x/1000, data_z/1000, 2, c='xkcd:black', marker='.', zorder=30)
 
@@ -1588,8 +1588,8 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path, save_frame
             color_litho = 'xkcd:black'
             color_ast = 'xkcd:bright pink'
 
-            ax.plot(data_x[cond_litho]/1000, data_z[cond_litho]/1000, "o", color=color_litho, markersize=0.2, alpha=1.0, zorder=30)
-            ax.plot(data_x[cond_ast]/1000, data_z[cond_ast]/1000, "o", color=color_ast, markersize=0.2, alpha=1.0, zorder=30)
+            ax.plot(data_x[cond_litho][::step_plot]/1000, data_z[cond_litho][::step_plot]/1000, marker, color=color_litho, markersize=particle_size, alpha=1.0, zorder=30)
+            ax.plot(data_x[cond_ast][::step_plot]/1000, data_z[cond_ast][::step_plot]/1000, marker, color=color_ast, markersize=particle_size, alpha=1.0, zorder=30)
         # else:
         #     print('Error: You cannot print particles in the Surface plot!')
         #     return()
