@@ -1773,7 +1773,7 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
     plt.rc('ytick', labelsize = label_size)
     
     #plot Time in Myr
-    ax.text(0.70, 0.85, ' {:01} Myr'.format(instant), fontsize = 18, zorder=52, transform=ax.transAxes)
+    ax.text(0.82, 1.035, ' {:01} Myr'.format(instant), bbox=dict(facecolor='white', edgecolor='white', alpha=0.0), fontsize = 14, zorder=52, transform=ax.transAxes)
     
     val_minmax = vals_minmax[prop]
     
@@ -2003,57 +2003,58 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
                      vmax = 0.7,
                      aspect = 'auto')
         #legend box
-        bv1 = inset_axes(ax,
-                        loc='lower right',
-                        width="100%",  # respective to parent_bbox width
-                        height="100%",  # respective to parent_bbox width
-                        bbox_to_anchor=(0.9,#horizontal position respective to parent_bbox or "loc" position
-                                        0.3,# vertical position
-                                        0.085,# width
-                                        0.35),# height
-                        bbox_transform=ax.transAxes
-                        )
-        
-        A = np.zeros((100, 10))
+        if(plot_colorbar == True):
+            bv1 = inset_axes(ax,
+                            loc='lower right',
+                            width="100%",  # respective to parent_bbox width
+                            height="100%",  # respective to parent_bbox width
+                            bbox_to_anchor=(0.9,#horizontal position respective to parent_bbox or "loc" position
+                                            0.3,# vertical position
+                                            0.08,# width
+                                            0.35),# height
+                            bbox_transform=ax.transAxes
+                            )
+            
+            A = np.zeros((100, 10))
 
-        A[:25, :] = 2700
-        A[25:50, :] = 2800
-        A[50:75, :] = 3300
-        A[75:100, :] = 3400
+            A[:25, :] = 2700
+            A[25:50, :] = 2800
+            A[50:75, :] = 3300
+            A[75:100, :] = 3400
 
-        A = A[::-1, :]
+            A = A[::-1, :]
 
-        xA = np.linspace(-0.5, 0.9, 10)
-        yA = np.linspace(0, 1.5, 100)
+            xA = np.linspace(-0.5, 0.9, 10)
+            yA = np.linspace(0, 1.5, 100)
 
-        xxA, yyA = np.meshgrid(xA, yA)
-        air_threshold = 200
-        bv1.contourf(
-            xxA,
-            yyA,
-            A,
-            levels=[air_threshold, 2750, 2900, 3365, 3900],
-            colors=[color_uc, color_lc, color_lit, color_ast],
-            extent=[-0.5, 0.9, 0, 1.5]
-        )
+            xxA, yyA = np.meshgrid(xA, yA)
+            air_threshold = 200
+            bv1.contourf(
+                xxA,
+                yyA,
+                A,
+                levels=[air_threshold, 2750, 2900, 3365, 3900],
+                colors=[color_uc, color_lc, color_lit, color_ast],
+                extent=[-0.5, 0.9, 0, 1.5]
+            )
 
-        bv1.imshow(
-            xxA[::-1, :],
-            extent=[-0.5, 0.9, 0, 1.5],
-            zorder=100,
-            alpha=0.2,
-            cmap=plt.get_cmap("Greys"),
-            vmin=-0.5,
-            vmax=0.9,
-            aspect='auto'
-        )
+            bv1.imshow(
+                xxA[::-1, :],
+                extent=[-0.5, 0.9, 0, 1.5],
+                zorder=100,
+                alpha=0.2,
+                cmap=plt.get_cmap("Greys"),
+                vmin=-0.5,
+                vmax=0.9,
+                aspect='auto'
+            )
 
-        bv1.set_yticklabels([])
-        bv1.set_xlabel(r"log$(\varepsilon_{II})$", size=10)
-        bv1.tick_params(axis='x', which='major', labelsize=10)
-        bv1.set_xticks([-0.5, 0, 0.5])
-        bv1.set_yticks([])
-        bv1.xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
+            bv1.set_yticklabels([])
+            bv1.set_xlabel(r"log$(\varepsilon_{II})$", size=10)
+            bv1.tick_params(axis='x', which='major', labelsize=10)
+            bv1.set_xticks([-0.5, 0, 0.5])
+            bv1.set_yticks([])
+            bv1.xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
             
     
     if(plot_particles == True):
