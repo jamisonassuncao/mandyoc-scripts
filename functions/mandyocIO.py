@@ -1316,7 +1316,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
     fig, ax = plt.subplots(1, 1, figsize=(12, 12*(Lz/Lx)), constrained_layout = True)
     # fig, ax = plt.subplots(1, 1, figsize=(12, 10), constrained_layout = True)
     #plot Time in Myr
-    ax.text(0.8, 0.85, ' {:01} Myr'.format(instant), fontsize = 18, zorder=52, transform=ax.transAxes)
+    ax.text(0.85, 1.05, ' {:01} Myr'.format(instant), fontsize = 18, zorder=52, transform=ax.transAxes)
     
     val_minmax = vals_minmax[prop]
     
@@ -1335,7 +1335,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
         #         fmt[level] = str(level) + r'$^{\circ}$C'
 
         #     ax.clabel(cs, cs.levels, fmt=fmt, inline=True, use_clabeltext=True)
-    if(plot_melt == True and prop != 'topography'):
+    if(plot_melt == True and prop != 'surface'):
         if(melt_method == 'dry'):
             melt = _calc_melt_dry(dataset.temperature, dataset.pressure)
         elif(melt_method == 'wet'):
@@ -1551,9 +1551,9 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
                         width="100%",  # respective to parent_bbox width
                         height="100%",  # respective to parent_bbox width
                         bbox_to_anchor=(0.9,#horizontal position respective to parent_bbox or "loc" position
-                                        0.3,# vertical position
+                                        0.15,# vertical position
                                         0.085,# width
-                                        0.35),# height
+                                        0.2),# height
                         bbox_transform=ax.transAxes
                         )
         
