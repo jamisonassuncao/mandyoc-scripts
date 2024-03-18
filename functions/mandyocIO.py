@@ -1499,10 +1499,13 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
             clb.minorticks_off()
         
     elif(prop == 'strain'):
+
         im = ax.imshow(data.T,
                        cmap = props_cmap[prop],
                        origin='lower',
                        extent = (0, Lx / 1.0E3, -Lz / 1.0E3 + 40, 0 + 40),
+                       # norm = LogNorm(vmin=data.min(), vmax=data.max()),
+                       # norm = LogNorm(vmin=1.0e18, vmax=1.0e25),
                        vmin = float(data.min()),
                        vmax = float(data.max()),
                        aspect = 'auto')
