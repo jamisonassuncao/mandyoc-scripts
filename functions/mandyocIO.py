@@ -1072,7 +1072,8 @@ def _read_step(path, filename, ncores):
         try:
             aux_x, aux_z, aux_ID, aux_lithology, aux_strain = np.loadtxt(os.path.join(path, f"{filename}{str(i)}.txt"), unpack=True, comments="P")
         except:
-            print(f"didnt read file {filename}{str(i)}.txt\n")
+            filepath = os.path.join(path, f"{filename}{str(i)}.txt")
+            print(f"didnt read file {filepath}\n")
             continue
         data_x = np.append(data_x, aux_x)
         data_z = np.append(data_z, aux_z)
@@ -2081,9 +2082,6 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
 
             ax.plot(data_x[cond_litho][::step_plot]/1000, data_z[cond_litho][::step_plot]/1000, particle_marker, color=color_litho, markersize=particle_size, alpha=1.0, zorder=30)
             ax.plot(data_x[cond_ast][::step_plot]/1000, data_z[cond_ast][::step_plot]/1000, particle_marker, color=color_ast, markersize=particle_size, alpha=1.0, zorder=30)
-        # else:
-        #     print('Error: You cannot print particles in the Surface plot!')
-        #     return()
     
     if(prop != 'surface'):
         #Filling above topographic surface
