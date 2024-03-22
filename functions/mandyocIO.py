@@ -1675,6 +1675,14 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
 
 
         plt.savefig(fig_name, dpi=400)
+        
+    plt.close('all')
+
+    del fig
+    del ax
+    del dataset
+    del data
+    gc.collect()
 
 def plot_property(dataset, prop, xlims, ylims, model_path,
                 fig,
