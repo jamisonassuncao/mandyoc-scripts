@@ -1041,47 +1041,6 @@ def read_particle_path(path, position, unit_number=np.nan, ncores=np.nan):
         
     return x, z, closest_ID
 
-def _read_step(path, filename, ncores):
-    """
-    Read a step file.
-    
-    Parameters
-    ----------
-    path : str
-        Path to read the data.
-    filename : str
-        Auxiliary file name.
-    ncores : int
-        Number of cores the simulation used.
-        
-    Return
-    ------
-    data_x : array (Length N)
-        Array containing the position x of the particle.
-    data_z : array (Length N)
-        Array containing the position z of the particle.
-    data_ID : array (Length N)
-        Array containing the ID of the particle.
-    data_lithology : array (Length N)
-        Array containing the number of the particle lithology of the particle.
-    data_strain : array (Length N)
-        Array containing the strain of the particle.
-    """
-    data_x, data_z, data_ID, data_lithology, data_strain = [], [], [], [], []
-    for i in range(ncores):
-        try:
-            aux_x, aux_z, aux_ID, aux_lithology, aux_strain = np.loadtxt(os.path.join(path, f"{filename}{str(i)}.txt"), unpack=True, comments="P")
-        except:
-            filepath = os.path.join(path, f"{filename}{str(i)}.txt")
-            print(f"didnt read file {filepath}\n")
-            continue
-        data_x = np.append(data_x, aux_x)
-        data_z = np.append(data_z, aux_z)
-        data_ID = np.append(data_ID, aux_ID)
-        data_lithology = np.append(data_lithology, aux_lithology)
-        data_strain = np.append(data_strain, aux_strain)
-    return np.asarray(data_x), np.asarray(data_z), np.asarray(data_ID), np.asarray(data_lithology), np.asarray(data_strain)
-
 
 def _extract_interface(z, Z, Nx, Rhoi, rho):
     '''
@@ -1212,6 +1171,46 @@ def find_nearest(array, value):
     idx = (np.abs(array - value)).argmin()
     return idx
 
+def _read_step(path, filename, ncores):
+    """
+    Read a step file.
+    
+    Parameters
+    ----------
+    path : str
+        Path to read the data.
+    filename : str
+        Auxiliary file name.
+    ncores : int
+        Number of cores the simulation used.
+        
+    Return
+    ------
+    data_x : array (Length N)
+        Array containing the position x of the particle.
+    data_z : array (Length N)
+        Array containing the position z of the particle.
+    data_ID : array (Length N)
+        Array containing the ID of the particle.
+    data_lithology : array (Length N)
+        Array containing the number of the particle lithology of the particle.
+    data_strain : array (Length N)
+        Array containing the strain of the particle.
+    """
+    data_x, data_z, data_ID, data_lithology, data_strain = [], [], [], [], []
+    for i in range(ncores):
+        try:
+            aux_x, aux_z, aux_ID, aux_lithology, aux_strain = np.loadtxt(os.path.join(path, f"{filename}{str(i)}.txt"), unpack=True, comments="P")
+        except:
+            filepath = os.path.join(path, f"{filename}{str(i)}.txt")
+            print(f"didnt read file {filepath}\n")
+            continue
+        data_x = np.append(data_x, aux_x)
+        data_z = np.append(data_z, aux_z)
+        data_ID = np.append(data_ID, aux_ID)
+        data_lithology = np.append(data_lithology, aux_lithology)
+        data_strain = np.append(data_strain, aux_strain)
+    return np.asarray(data_x), np.asarray(data_z), np.asarray(data_ID), np.asarray(data_lithology), np.asarray(data_strain)
 
 def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
                 save_frames=True,
@@ -1605,9 +1604,24 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
     
     if(plot_particles == True):
         if(prop != 'surface'):
-            # ncores = 20
-            data_x, data_z, data_ID, data_lithology, data_strain = _read_step(model_path, f"step_{int(dataset.step)}_", ncores)
+            # ncores = 12
+            # data_x, data_z, data_ID, data_lithology, data_strain = _read_step(model_path, f"step_{int(dataset.step)}_", ncores)
             # ax.scatter(data_x/1000, data_z/1000, 2, c='xkcd:black', marker='.', zorder=30)
+
+            data_x, data_z, data_ID, data_lithology, data_strain = [], [], [], [], []
+            for i in range(ncores):
+                # aux_x, aux_z, aux_ID, aux_lithology, aux_strain = np.loadtxt(f"step_{int(dataset.step)}_{str(i)}.txt", unpack=True, comments="P")
+                try:
+                    aux_x, aux_z, aux_ID, aux_lithology, aux_strain = np.loadtxt(f"step_{int(dataset.step)}_{str(i)}.txt", unpack=True, comments="P")
+                except:
+                    filepath = f"step_{int(dataset.step)}_{str(i)}.txt"
+                    print(f"didnt read file {filepath}\n")
+                    continue
+                data_x = np.append(data_x, aux_x)
+                data_z = np.append(data_z, aux_z)
+                data_ID = np.append(data_ID, aux_ID)
+                data_lithology = np.append(data_lithology, aux_lithology)
+                data_strain = np.append(data_strain, aux_strain)
 
             cond_litho = data_lithology > 0
             cond_ast = data_lithology == 0
