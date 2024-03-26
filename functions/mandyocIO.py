@@ -1113,6 +1113,183 @@ def change_dataset(properties, datasets):
             new_datasets.append("density")
             
     return new_datasets
+
+def calc_mean_temperaure_region(data, Nz, xx, begin, end):
+    '''
+    This funcition select a region in x direction in a 2D array and calculates the horizontal mean
+
+    Parameters
+    ----------
+
+    data: `numpy.ndarray`
+
+    Nz: int
+        Number of points in Z direction
+
+    xx: numpy.ndarray
+        2D grid with x cordinates
+
+    begin: float
+        Start point
+
+    end: float
+        End point
+
+    Returns
+    -------
+    arr: `numpy.ndarray`
+        Array containing the horizontal mean of selected region
+    '''
+
+    x_region = (xx >= begin) & (xx <= end)
+    Nx_aux = len(x_region[0][x_region[0]==True])
+    data_sel = data[x_region].reshape(Nz, Nx_aux)
+    data_sel_mean = np.mean(data_sel, axis=1)
+    
+    del data_sel
+    del data
+    gc.collect()
+
+    return data_sel_mean
+
+def Tp_estimate(mean_temp, z, zbot, ztop):
+    zcond = (z<=zbot+40) & (z>=ztop+40) #considering air layer
+
+    zcut = z[zcond]
+    tcut = mean_temp[zcond]
+
+    params = curve_fit(fit_func, zcut, tcut)
+    [a, b] = params[0]
+
+    tfit = a*z + b #temeprature fitted
+
+    #find the mantle potential temperature
+    idx = np.where(z == 40.0)[0][0] #air thickness = 40 
+    Tp = int(np.round(tfit[idx], 0))
+
+    return Tp, tfit
+
+def fit_func(x, a, b):
+    return a*x + b
+
+def calc_and_plot_YSE(ax, T_mean_region, z,
+                      clc = 10,
+                      thickness_sa = 40 * 1.0e3,
+                      thickness_upper_crust = 20 * 1.0e3,
+                      thickness_lower_crust = 15 * 1.0e3,
+                      thickness_litho = 80 * 1.0e3):
+
+    # Creating YSE
+
+    L = thickness_litho #select from z axis of the scenario
+    N = int(2*thickness_litho/1.0e3 + 1)
+    z_yse = np.linspace(0, L, N)
+    dz_yse = z_yse[1]-z_yse[0]
+
+    f = interp1d(z, T_mean_region)
+    T_interp = f(z_yse/1.0e3)
+
+    rho = np.zeros_like(z_yse)
+
+    #conditions for regions
+    uc = (z_yse <= thickness_upper_crust)
+    lc = (z_yse > thickness_upper_crust) & (z_yse <= thickness_upper_crust + thickness_lower_crust)
+    lm = (z_yse > thickness_upper_crust + thickness_lower_crust)
+
+    rho[uc]=2700.0
+    rho[lc]=2800.0
+    rho[lm]=3354.0
+    g = 10.0
+
+    P = 0.0
+    Paux = 0.0
+    for i in range(1, N):
+        Paux += dz_yse*rho[i]*g
+        P = np.append(P, Paux)
+
+    phi = 2.0*np.pi/180.0
+    c0 = 4.0E6
+    sigma_min = c0 * np.cos(phi) + P * np.sin(phi)
+
+    phi = 15.0*np.pi/180.0
+    c0 = 20.0E6
+    sigma_max = c0 * np.cos(phi) + P * np.sin(phi)
+
+    #rheological params
+    Q = np.zeros_like(z_yse)
+    A = np.zeros_like(z_yse)
+    n = np.zeros_like(z_yse)
+    V = np.zeros_like(z_yse)
+    C = np.zeros_like(z_yse)
+
+    Q[uc]=222000.0
+    Q[lc]=222000.0
+    Q[lm]=540000.0
+
+    A[uc]=8.574E-28
+    A[lc]=8.574E-28
+    A[lm]=2.4168E-15
+
+    n[uc]=4.0
+    n[lc]=4.0
+    n[lm]=3.5
+
+    V[uc]=0.0
+    V[lc]=0.0
+    V[lm]=25.0E-6
+
+    #strain rate (sr)
+    sr = 1.0E-15
+
+    #gas constant
+    R = 8.314
+
+    #print(n)
+
+    #Temperature Kelvin
+    TK = T_interp + 273
+
+    #Viscosity
+    #Choosing C for layers
+    C[uc]=1.0
+    C[lc] = clc
+    C[lm]=1.0
+    
+    visc = C * A**(-1./n) * sr**((1.0-n)/n)*np.exp((Q + V*P)/(n*R*TK))
+
+    sigma_v = visc * sr
+
+    cond = sigma_v>sigma_max
+    sigma_v[cond]=sigma_max[cond]
+
+    ax.plot(sigma_v/1.0E9, z_yse/1000, linestyle='-', color='black', alpha=0.7)
+
+    
+    cr = 255.
+    color_uc = (228./cr, 156./cr, 124./cr)
+    color_lc = (240./cr, 209./cr, 188./cr)
+    color_lit = (155./cr, 194./cr, 155./cr)
+    color_ast = (207./cr, 226./cr, 205./cr)
+
+    #filling inside YSE
+    ax.fill_betweenx(z_yse[uc]/1000, z_yse[uc]*0, sigma_v[uc]/1.0E9, color=color_uc, ec="k")
+    ax.fill_betweenx(z_yse[lc]/1000, z_yse[lc]*0, sigma_v[lc]/1.0E9, color=color_lc, ec="k")
+    ax.fill_betweenx(z_yse[lm]/1000, z_yse[lm]*0, sigma_v[lm]/1.0E9, color=color_lit, ec="k")
+
+    # gray=0.
+    # ax.plot(sigma_min/1.0E9, z_yse/1000, "--", color=(gray,gray,gray))
+        # ax.plot(sigma_max/1.0E9, z_yse/1000, "--", color=(gray,gray,gray))
+
+    ax.set_xlim([0, 0.5])
+    ax.set_xticks(np.linspace(0, 0.5, 6))
+    # ax.set_ylim([thickness_litho/1.0e3, 0])
+    ax.set_ylim([200, 0])
+    ax.set_yticks(np.linspace(0, 200, 11))
+
+    del ax
+    gc.collect()
+
+
 def _calc_melt_dry(To,Po):
 
     P=np.asarray(Po)/1.0E6 # Pa -> MPa
