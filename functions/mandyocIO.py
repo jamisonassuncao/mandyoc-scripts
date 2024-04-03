@@ -1949,7 +1949,8 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
                    'lithology':           [None, None],
                    'pressure':            [-1.0E-3, 1.0],
                    'strain':              [None, None],
-                   'strain_rate':         [1.0E-19, 1.0E-14],
+                   # 'strain_rate':         [1.0E-19, 1.0E-14],
+                   'strain_rate':         [1.0E-20, 1.0E-15],
 #                    'strain_rate':         [np.log10(1.0E-19), np.log10(1.0E-14)],
                    'temperature':         [0, 1600],
                    'temperature_anomaly': [-150, 150],
@@ -2108,9 +2109,9 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
 
             clb = fig.colorbar(im,
                             cax=axins1,
-    #                            ticks=ticks,
+                            # ticks=[-20, -18, -16, -14],#ticks,
                             orientation='horizontal',
-                            fraction=0.08,
+                            fraction=0.09,
                             pad=0.2,
                             format=_log_fmt)
 
@@ -2211,9 +2212,9 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
                             loc='lower right',
                             width="100%",  # respective to parent_bbox width
                             height="100%",  # respective to parent_bbox width
-                            bbox_to_anchor=(0.9,#horizontal position respective to parent_bbox or "loc" position
+                            bbox_to_anchor=(0.85,#horizontal position respective to parent_bbox or "loc" position
                                             0.3,# vertical position
-                                            0.08,# width
+                                            0.12,# width
                                             0.35),# height
                             bbox_transform=ax.transAxes
                             )
@@ -2284,25 +2285,27 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
     
     if(prop != 'surface'):
         #Filling above topographic surface
-        Rhoi = dataset.density.T
-        interfaces=[2900, 3365]
-        ##Extract layer topography
-        z = np.linspace(Lz/1000.0, 0, Nz)
-        Z = np.linspace(Lz/1000.0, 0, 8001) #zi
-        x = np.linspace(Lx/1000.0, 0, Nx)
+        # Rhoi = dataset.density.T
+        # interfaces=[2900, 3365]
+        # ##Extract layer topography
+        # z = np.linspace(Lz/1000.0, 0, Nz)
+        # Z = np.linspace(Lz/1000.0, 0, 8001) #zi
+        # x = np.linspace(Lx/1000.0, 0, Nx)
 
-        topo_interface = _extract_interface(z, Z, Nx, Rhoi, 300.) #200 kg/m3 = air/crust interface
-        condx = (xi >= 100) & (xi <= 600)
-        z_mean = np.mean(topo_interface[condx])
-        topo_interface -= np.abs(z_mean)
-        topo_interface = -1.0*topo_interface
+        # topo_interface = _extract_interface(z, Z, Nx, Rhoi, 200.) #200 kg/m3 = air/crust interface
+        # condx = (xi >= 100) & (xi <= 600)
+        # z_mean = np.mean(topo_interface[condx])
+        # topo_interface -= np.abs(z_mean)
+        # topo_interface = -1.0*topo_interface
 
+        topo_interface = dataset.surface/1.0e3 + 40.0
         xaux = xx[0]
-        condaux = (xaux>xlims[0]) & (xaux<xlims[1])
+        condaux = (xaux>=xlims[0]) & (xaux<=xlims[1])
         xaux = xaux[condaux]
+        xaux[0] += 2
+        xaux[-1] -= 2
+        ax.fill_between(xaux, topo_interface[condaux], ylims[-1]-0.8, color='white', alpha=1.0, zorder=51)
 
-        ax.fill_between(xaux, topo_interface[condaux], 35, color='white', alpha=1.0, zorder=51)
-        
         ax.set_xlim(xlims)
         ax.set_ylim(ylims)
         # ax.set_xlabel("Distance (km)", fontsize = label_size)
