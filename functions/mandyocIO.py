@@ -2179,18 +2179,18 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
         color_ast = (207. / cr, 226. / cr, 205. / cr)
         
         Rhoi = dataset.density.T
-        interfaces=[2900, 3365]
+        # interfaces=[2900, 3365]
         
-        ##Extract layer topography
-        z = np.linspace(Lz/1000.0, 0, Nz)
-        Z = np.linspace(Lz/1000.0, 0, 8001) #zi
-        x = np.linspace(Lx/1000.0, 0, Nx)
+        # ##Extract layer topography
+        # z = np.linspace(Lz/1000.0, 0, Nz)
+        # Z = np.linspace(Lz/1000.0, 0, 8001) #zi
+        # x = np.linspace(Lx/1000.0, 0, Nx)
             
-        topo_interface = _extract_interface(z, Z, Nx, Rhoi, 300.) #200 kg/m3 = air/crust interface
-        condx = (xi >= 100) & (xi <= 600)
-        z_mean = np.mean(topo_interface[condx])
-        topo_interface -= np.abs(z_mean)
-        topo_interface = -1.0*topo_interface
+        # topo_interface = _extract_interface(z, Z, Nx, Rhoi, 300.) #200 kg/m3 = air/crust interface
+        # condx = (xi >= 100) & (xi <= 600)
+        # z_mean = np.mean(topo_interface[condx])
+        # topo_interface -= np.abs(z_mean)
+        # topo_interface = -1.0*topo_interface
         
         ax.contourf(xx,
                     zz,
@@ -2202,6 +2202,7 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
                      cmap = 'Greys',
                      origin = 'lower',
                      extent = (0, Lx / 1.0E3, -Lz / 1.0E3 + 40,0 + 40),
+                     # extent = (xlims[0], xlims[1], ylims[0], ylims[1]),
                      zorder = 50,
                      alpha = 0.2, vmin=-0.5,
                      vmax = 0.7,
