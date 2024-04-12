@@ -1822,23 +1822,27 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
     if(prop != 'surface'):
         #Filling above topographic surface
         Rhoi = dataset.density.T
-        interfaces=[2900, 3365]
-        ##Extract layer topography
-        z = np.linspace(Lz/1000.0, 0, Nz)
-        Z = np.linspace(Lz/1000.0, 0, 8001) #zi
-        x = np.linspace(Lx/1000.0, 0, Nx)
+        # interfaces=[2900, 3365]
+        # ##Extract layer topography
+        # z = np.linspace(Lz/1000.0, 0, Nz)
+        # Z = np.linspace(Lz/1000.0, 0, 8001) #zi
+        # x = np.linspace(Lx/1000.0, 0, Nx)
 
-        topo_interface = _extract_interface(z, Z, Nx, Rhoi, 300.) #200 kg/m3 = air/crust interface
-        condx = (xi >= 100) & (xi <= 600)
-        z_mean = np.mean(topo_interface[condx])
-        topo_interface -= np.abs(z_mean)
-        topo_interface = -1.0*topo_interface
+        # topo_interface = _extract_interface(z, Z, Nx, Rhoi, 300.) #200 kg/m3 = air/crust interface
+        # condx = (xi >= 100) & (xi <= 600)
+        # z_mean = np.mean(topo_interface[condx])
+        # topo_interface -= np.abs(z_mean)
+        # topo_interface = -1.0*topo_interface
 
+        topo_interface = dataset.surface/1.0e3 + 40.0
         xaux = xx[0]
         condaux = (xaux>xlims[0]) & (xaux<xlims[1])
         xaux = xaux[condaux]
 
-        ax.fill_between(xaux, topo_interface[condaux], 39, color='white', alpha=1.0, zorder=51)
+        xaux[0] += 2
+        xaux[-1] -= 2
+
+        ax.fill_between(xaux, topo_interface[condaux], ylims[-1]-0.8, color='white', alpha=1.0, zorder=51)
         
         ax.set_xlim(xlims)
         ax.set_ylim(ylims)
