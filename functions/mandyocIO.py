@@ -1800,7 +1800,8 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
                 data_lithology = np.append(data_lithology, aux_lithology)
                 data_strain = np.append(data_strain, aux_strain)
 
-            cond_litho = data_lithology > 0
+            cond_litho = data_lithology > 1
+            cond_mb = data_lithology == 1
             cond_ast = data_lithology == 0
 
             # if(prop=='lithology'):
@@ -1811,9 +1812,15 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
             #     color_ast = 'xkcd:black'
 
             color_litho = 'xkcd:black'
+            # color_mb = 'xkcd:neon green'
+            color_mb = 'xkcd:black'
             color_ast = 'xkcd:bright pink'
 
             ax.plot(data_x[cond_litho][::step_plot]/1000, data_z[cond_litho][::step_plot]/1000+40, particle_marker, color=color_litho, markersize=particle_size, alpha=1.0, zorder=30)
+<<<<<<< HEAD
+=======
+            ax.plot(data_x[cond_mb][::step_plot]/1000, data_z[cond_mb][::step_plot]/1000+40, particle_marker, color=color_mb, markersize=particle_size, alpha=1.0, zorder=30)
+>>>>>>> 5e03362dc602d548d19eddd9c0a699792edef535
             ax.plot(data_x[cond_ast][::step_plot]/1000, data_z[cond_ast][::step_plot]/1000+40, particle_marker, color=color_ast, markersize=particle_size, alpha=1.0, zorder=30)
         # else:
         #     print('Error: You cannot print particles in the Surface plot!')
@@ -1866,7 +1873,8 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
         if(plot_particles == True):
                 fig_name = f"{fig_name}_particles"
         
-        fig_name = f"{fig_name}_{str(int(dataset.step)).zfill(6)}.png"
+        # fig_name = f"{fig_name}_{str(int(dataset.step)).zfill(6)}.png"
+        fig_name = f"{fig_name}_onlymb_{str(int(dataset.step)).zfill(6)}.png"
 
 
         plt.savefig(fig_name, dpi=400)
@@ -2284,6 +2292,8 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
             #     color_ast = 'xkcd:black'
 
             color_litho = 'xkcd:black'
+            # color_mb = 'xkcd:neon green'
+            color_mb = 'xkcd:black'
             color_ast = 'xkcd:bright pink'
             color_mb = 'xkcd:black'
             # color_mb = 'xkcd:neon green'
@@ -2291,8 +2301,11 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
             ax.plot(data_x[cond_litho][::step_plot]/1000, data_z[cond_litho][::step_plot]/1000+40, particle_marker, color=color_litho, markersize=particle_size, alpha=1.0, zorder=30)
             ax.plot(data_x[cond_mb][::step_plot]/1000, data_z[cond_mb][::step_plot]/1000+40, particle_marker, color=color_mb, markersize=particle_size, alpha=1.0, zorder=30)
             ax.plot(data_x[cond_ast][::step_plot]/1000, data_z[cond_ast][::step_plot]/1000+40, particle_marker, color=color_ast, markersize=particle_size, alpha=1.0, zorder=30)
+<<<<<<< HEAD
             # ax.plot(data_x[cond_ast][::step_plot*4]/1000, data_z[cond_ast][::step_plot*4]/1000+40, particle_marker, color=color_ast, markersize=particle_size-0.95, alpha=1.0, zorder=30)
     
+=======
+>>>>>>> 5e03362dc602d548d19eddd9c0a699792edef535
     
     if(prop != 'surface'):
         #Filling above topographic surface
