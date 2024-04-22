@@ -17,3 +17,4 @@ dependencies:
   - astropy
   - pymp-pypi
   - numba
+  - cmcrameri

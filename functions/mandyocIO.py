@@ -1817,10 +1817,8 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
             color_ast = 'xkcd:bright pink'
 
             ax.plot(data_x[cond_litho][::step_plot]/1000, data_z[cond_litho][::step_plot]/1000+40, particle_marker, color=color_litho, markersize=particle_size, alpha=1.0, zorder=30)
-<<<<<<< HEAD
-=======
+
             ax.plot(data_x[cond_mb][::step_plot]/1000, data_z[cond_mb][::step_plot]/1000+40, particle_marker, color=color_mb, markersize=particle_size, alpha=1.0, zorder=30)
->>>>>>> 5e03362dc602d548d19eddd9c0a699792edef535
             ax.plot(data_x[cond_ast][::step_plot]/1000, data_z[cond_ast][::step_plot]/1000+40, particle_marker, color=color_ast, markersize=particle_size, alpha=1.0, zorder=30)
         # else:
         #     print('Error: You cannot print particles in the Surface plot!')
@@ -2301,12 +2299,8 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
             ax.plot(data_x[cond_litho][::step_plot]/1000, data_z[cond_litho][::step_plot]/1000+40, particle_marker, color=color_litho, markersize=particle_size, alpha=1.0, zorder=30)
             ax.plot(data_x[cond_mb][::step_plot]/1000, data_z[cond_mb][::step_plot]/1000+40, particle_marker, color=color_mb, markersize=particle_size, alpha=1.0, zorder=30)
             ax.plot(data_x[cond_ast][::step_plot]/1000, data_z[cond_ast][::step_plot]/1000+40, particle_marker, color=color_ast, markersize=particle_size, alpha=1.0, zorder=30)
-<<<<<<< HEAD
             # ax.plot(data_x[cond_ast][::step_plot*4]/1000, data_z[cond_ast][::step_plot*4]/1000+40, particle_marker, color=color_ast, markersize=particle_size-0.95, alpha=1.0, zorder=30)
-    
-=======
->>>>>>> 5e03362dc602d548d19eddd9c0a699792edef535
-    
+
     if(prop != 'surface'):
         #Filling above topographic surface
         # Rhoi = dataset.density.T
