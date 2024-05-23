@@ -1399,6 +1399,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
                 ncores=20,
                 step_plot=1,
                 isotherms=[400, 600, 800, 1000, 1300],
+                # isotherms=[800, 1300],
                 plot_melt=False, melt_method='dry'):
     '''
     Plot and save data from mandyoc according to a given property and domain limits.
@@ -1512,6 +1513,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
         #         fmt[level] = str(level) + r'$^{\circ}$C'
 
         #     ax.clabel(cs, cs.levels, fmt=fmt, inline=True, use_clabeltext=True)
+
     if(plot_melt == True and prop != 'surface'):
         if(melt_method == 'dry'):
             melt = _calc_melt_dry(dataset.temperature, dataset.pressure)
@@ -1820,6 +1822,7 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
 
             ax.plot(data_x[cond_mb][::step_plot]/1000, data_z[cond_mb][::step_plot]/1000+40, particle_marker, color=color_mb, markersize=particle_size, alpha=1.0, zorder=30)
             ax.plot(data_x[cond_ast][::step_plot]/1000, data_z[cond_ast][::step_plot]/1000+40, particle_marker, color=color_ast, markersize=particle_size, alpha=1.0, zorder=30)
+            
         # else:
         #     print('Error: You cannot print particles in the Surface plot!')
         #     return()
@@ -1871,8 +1874,8 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
         if(plot_particles == True):
                 fig_name = f"{fig_name}_particles"
         
-        # fig_name = f"{fig_name}_{str(int(dataset.step)).zfill(6)}.png"
-        fig_name = f"{fig_name}_onlymb_{str(int(dataset.step)).zfill(6)}.png"
+        fig_name = f"{fig_name}_{str(int(dataset.step)).zfill(6)}.png"
+        # fig_name = f"{fig_name}_onlymb_{str(int(dataset.step)).zfill(6)}.png"
 
 
         plt.savefig(fig_name, dpi=400)
