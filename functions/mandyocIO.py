@@ -1990,7 +1990,7 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
     plt.rc('ytick', labelsize = label_size)
     
     #plot Time in Myr
-    ax.text(0.82, 1.035, ' {:01} Myr'.format(instant), bbox=dict(facecolor='white', edgecolor='white', alpha=0.0), fontsize = 14, zorder=52, transform=ax.transAxes)
+    ax.text(0.68, 1.035, ' {:01} Myr'.format(instant), bbox=dict(facecolor='white', edgecolor='white', alpha=0.0), fontsize = 14, zorder=52, transform=ax.transAxes)
     
     val_minmax = vals_minmax[prop]
     
@@ -2145,9 +2145,9 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
                                 loc='lower right',
                                 width="100%",  # respective to parent_bbox width
                                 height="100%",  # respective to parent_bbox width
-                                bbox_to_anchor=(0.65,#horizontal position respective to parent_bbox or "loc" position
+                                bbox_to_anchor=(0.12,#horizontal position respective to parent_bbox or "loc" position
                                                 0.3,# vertical position
-                                                0.25,# width
+                                                0.4,# width
                                                 0.05),# height
                                 bbox_transform=ax.transAxes
                                 )
