@@ -1594,7 +1594,10 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
 
             data = topo_interface
         else:
-            data = dataset.surface/1.0e3 + 40.0 #km + air layer correction
+            condx = (xi >= 100) & (xi <= 600)
+            z_mean = np.mean(dataset.surface[condx])/1.0e3 + 40.0
+
+            data = dataset.surface/1.0e3 + 40.0 + np.abs(z_mean) #km + air layer correction
             
             
     elif(prop == 'pressure'):
@@ -1990,11 +1993,12 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
     plt.rc('ytick', labelsize = label_size)
     
     #plot Time in Myr
-    ax.text(0.68, 1.035, ' {:01} Myr'.format(instant), bbox=dict(facecolor='white', edgecolor='white', alpha=0.0), fontsize = 14, zorder=52, transform=ax.transAxes)
+    # ax.text(0.68, 1.035, ' {:01} Myr'.format(instant), bbox=dict(facecolor='white', edgecolor='white', alpha=0.0), fontsize = 14, zorder=52, transform=ax.transAxes)
+    ax.text(0.78, 1.035, ' {:01} Myr'.format(instant), bbox=dict(facecolor='white', edgecolor='white', alpha=0.0), fontsize = 14, zorder=52, transform=ax.transAxes)
     
     val_minmax = vals_minmax[prop]
     
-    if(plot_isotherms == True and prop != 'topography'): #Plot isotherms
+    if(plot_isotherms == True and prop != 'surface'): #Plot isotherms
         Temperi = dataset.temperature.T
         
         isot_colors = []
@@ -2089,7 +2093,10 @@ def plot_property(dataset, prop, xlims, ylims, model_path,
 
             data = topo_interface
         else:
-            data = dataset.surface/1.0e3 + 40.0 #km + air layer correction
+            condx = (xi >= 100) & (xi <= 600)
+            z_mean = np.mean(dataset.surface[condx])/1.0e3 + 40.0
+
+            data = dataset.surface/1.0e3 + 40.0 + np.abs(z_mean) #km + air layer correction
             
             
     elif(prop == 'pressure'):
