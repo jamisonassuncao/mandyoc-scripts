@@ -1736,9 +1736,9 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
                         width="100%",  # respective to parent_bbox width
                         height="100%",  # respective to parent_bbox width
                         bbox_to_anchor=(0.9,#horizontal position respective to parent_bbox or "loc" position
-                                        0.15,# vertical position
-                                        0.085,# width
-                                        0.2),# height
+                                        0.29,# vertical position
+                                        0.065,# width
+                                        0.4),# height
                         bbox_transform=ax.transAxes
                         )
         
@@ -1817,13 +1817,15 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
             #     color_ast = 'xkcd:black'
 
             color_litho = 'xkcd:black'
-            # color_mb = 'xkcd:neon green'
-            color_mb = 'xkcd:black'
+            color_mb = 'xkcd:neon green'
+            # color_mb = 'xkcd:black'
             color_ast = 'xkcd:bright pink'
 
             ax.plot(data_x[cond_litho][::step_plot]/1000, data_z[cond_litho][::step_plot]/1000+40, particle_marker, color=color_litho, markersize=particle_size, alpha=1.0, zorder=30)
 
-            ax.plot(data_x[cond_mb][::step_plot]/1000, data_z[cond_mb][::step_plot]/1000+40, particle_marker, color=color_mb, markersize=particle_size, alpha=1.0, zorder=30)
+            # ax.plot(data_x[cond_mb][::step_plot]/1000, data_z[cond_mb][::step_plot]/1000+40, particle_marker, color=color_mb, markersize=particle_size, alpha=1.0, zorder=30)
+            ax.plot(data_x[cond_mb][::step_plot]/1000, data_z[cond_mb][::step_plot]/1000+40, particle_marker, color=color_mb, markersize=particle_size*10, alpha=1.0, zorder=30)
+
             ax.plot(data_x[cond_ast][::step_plot]/1000, data_z[cond_ast][::step_plot]/1000+40, particle_marker, color=color_ast, markersize=particle_size, alpha=1.0, zorder=30)
             
         # else:
