@@ -36,13 +36,19 @@ PARAMETERS = {
 TEMPERATURE_HEADER = "T1\nT2\nT3\nT4"
 
 OUTPUTS = {
-    "temperature": "temperature",
     "density": "density",
+    "depletion_factor":"X_depletion",
+    "incremental_melt":"dPhi",
+    "melt":"Phi",
+    # "X_depletion":"X_depletion",
+    # "dPhi":"dPhi",
+    # "Phi":"Phi",
     "radiogenic_heat": "heat",
-    "viscosity": "viscosity",
+    "pressure": "pressure",
     "strain": "strain",
     "strain_rate": "strain_rate",
-    "pressure": "pressure",
+    "temperature": "temperature",
+    "viscosity": "viscosity",
     "surface": "surface",
     "velocity": "velocity",
 }
@@ -53,7 +59,7 @@ PARAMETERS_FNAME = "param.txt"
 
 # Define which datasets are scalars measured on the nodes of the grid, e.g.
 # surface and velocity are not scalars.
-SCALARS = tuple(OUTPUTS.keys())[:7]
+SCALARS = tuple(OUTPUTS.keys())[:10]
 
 def make_coordinates(region, shape):
     """
@@ -358,8 +364,9 @@ def read_mandyoc_output(model_path, parameters_file=PARAMETERS_FNAME, datasets=t
     profile_dims = ("time", "x")
     coords["x"], coords["z"] = coordinates[:]
 
-    print(f"Starting...")
+    print(f"******Starting...\n")
     datasets_aux = []
+    print("*****Bla bla bla")
     for scalar in SCALARS:
         if scalar in datasets:
             datasets_aux.append(scalar)
