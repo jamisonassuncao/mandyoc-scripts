@@ -1522,26 +1522,44 @@ def single_plot(dataset, prop, xlims, ylims, model_path, output_path,
         #     ax.clabel(cs, cs.levels, fmt=fmt, inline=True, use_clabeltext=True)
 
     if(plot_melt == True and prop != 'surface'):
-        if(melt_method == 'dry'):
-            melt = _calc_melt_dry(dataset.temperature, dataset.pressure)
-        elif(melt_method == 'wet'):
-            melt = _calc_melt_wet(dataset.temperature, dataset.pressure)
+        # if(melt_method == 'dry'):
+        #     melt = _calc_melt_dry(dataset.temperature, dataset.pressure)
+        # elif(melt_method == 'wet'):
+        #     melt = _calc_melt_wet(dataset.temperature, dataset.pressure)
 
-        levels = np.arange(0, 16, 1)
-        extent=(0,
-                Lx/1.0e3,
-                -Lz/1.0e3 + 40,
-                0 + 40)
+        # levels = np.arange(0, 16, 1)
+        # extent=(0,
+        #         Lx/1.0e3,
+        #         -Lz/1.0e3 + 40,
+        #         0 + 40)
         
-        cs = ax.contour(melt.T*100,
-                        levels,
-                        origin='lower',
-                        cmap='inferno',
-                        extent=extent,
-                        vmin=0, vmax=16,
-                        linewidths=0.5,
-                        # linewidths=30,
-                        zorder=30)
+        # cs = ax.contour(melt.T*100,
+        #                 levels,
+        #                 origin='lower',
+        #                 cmap='inferno',
+        #                 extent=extent,
+        #                 vmin=0, vmax=16,
+        #                 linewidths=0.5,
+        #                 # linewidths=30,
+        #                 zorder=30)
+
+        melt = xr.open_dataset(f'{model_path}/_output_melt.nc')
+        incremental_melt = xr.open_dataset(f'{model_path}/_output_incremental_melt.nc')
+        levels_melt = [0.2, 0.6]
+        cs = ax.contourf(xx,
+                         zz+h_air,
+                         melt,
+                        levels_melt,
+                        colors='xkcd:black',
+                        alpha=0.3,)
+        
+        levels_incremental_melt = [1.0e-10]
+        cs = ax.contourf(xx,
+                        zz+h_air,
+                        incremental_melt,
+                        levels_incremental_melt,
+                        colors='xkcd:red',
+                        alpha=0.3)
 
         axmelt = inset_axes(ax,
                             width="20%",  # width: 30% of parent_bbox width
