@@ -58,17 +58,19 @@ function plot_surface(data::NCDataset,stepindex::Int,pdict::Dict; strain::Any=fa
     h_air = pdict["h_air"]
     plots_param = pdict["plots_param"]
     variable = pdict["variable"]    
+    base_levels = pdict["base_levels"]
     fig,axs = plt.subplots(1,1,(figsize=(24*cm,8*cm)),sharex=true)
 
     x = data["x"][:]./1e3 #km
     surf = data[variable][:,stepindex] #m
     
-    axs.plot(x,surf,ls="solid",color="k")
-    axs.axhline(-500,ls="--",alpha=0.7,color="#3C62FA")
-    axs.axhline(-1000,ls="--",alpha=0.7,color="#3DB9E6")
-    axs.axhline(-2000,ls="--",alpha=0.7,color="#3DE6C5")
-    axs.axhline(-2500,ls="--",alpha=0.7,color="#5A54EE")
+    for bli in eachindex(base_levels)
+        axs.axhline(base_levels[bli],ls="--",alpha=0.7,
+            color=plots_param["acc_colors"][bli],label="BL=$(base_levels[bli]) m")
+    end
 
+    axs.plot(x,surf,ls="solid",color="k")
+    axs.legend(loc="lower right", fontsize=8)
     axs.set_xlabel("X (km)")
     axs.set_ylabel("Z (m)")
     axs.set_title("$(time) Myr - step_$(step)")
@@ -140,7 +142,7 @@ end
 
 variable::String = "surface" #ARGS[1] # temperature, viscosity, strain_rate, stress, velocity, etc
 data::NCDataset = NCDataset("$(variable).nc")
-strain::NCDataset = NCDataset("strain.nc")
+#strain::NCDataset = NCDataset("strain.nc")
 param = read_param("param.txt")
 steps, times = read_times()
 base_levels = Int[0, -500, -1000, -2000, -2500, -3000]
@@ -187,5 +189,6 @@ for i in eachindex(steps)
     time=times[i]
     @printf("%01d-Processing step %d at time %.2f Myr\n",i, step, time)
     plot_surface(data,i,pdict,strain=false)
+    GC.gc() #garbage collector
 end
-
+close(data)
