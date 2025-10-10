@@ -28,7 +28,6 @@ current_scenario=$1
 scripts_dir="/home/jbueno/scripts"
 cenario_dir=$1
 
-
 # --- Execução ---
 echo "Iniciando processamento para o cenário: $current_scenario (Array Task ID: $SLURM_ARRAY_TASK_ID)"
 
